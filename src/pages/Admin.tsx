@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Shield, ExternalLink, Eye } from "lucide-react";
+import { Plus, Pencil, Trash2, Shield, ExternalLink, Eye, Upload, Headphones } from "lucide-react";
 import { toast } from "sonner";
 import { sanitizeHtml } from "@/lib/sanitize";
 
@@ -30,6 +30,7 @@ const TYPE_FIELDS: Record<ContentType, { name: string; label: string; type?: "te
     { name: "description", label: "Description", type: "textarea" },
     { name: "youtube_id", label: "YouTube ID (optional)" },
     { name: "duration_minutes", label: "Duration (min)", type: "number" },
+    { name: "audio_url", label: "Audio link / embed URL (Spotify, SoundCloud, .mp3 …)", type: "url" },
     { name: "sort_order", label: "Sort order", type: "number" },
   ],
   prompts: [
