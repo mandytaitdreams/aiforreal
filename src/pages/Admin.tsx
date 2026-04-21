@@ -16,6 +16,12 @@ import { sanitizeHtml } from "@/lib/sanitize";
 
 type Track = { id: string; slug: string; number: string; title: string };
 
+// Maps content type to the tab value used inside TrackDetail
+const TRACK_TAB: Record<ContentType, string> = {
+  videos: "videos", prompts: "prompts", tools: "toolkit",
+  templates: "templates", playlists: "playlists", challenges: "challenges",
+};
+
 type ContentType = "videos" | "prompts" | "tools" | "templates" | "playlists" | "challenges";
 
 const TYPE_FIELDS: Record<ContentType, { name: string; label: string; type?: "text" | "textarea" | "number" | "url"; options?: string[] }[]> = {
