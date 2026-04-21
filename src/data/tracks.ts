@@ -182,6 +182,9 @@ export const TRACKS: Track[] = [
 export const tierLabel = (t: Track["tier"]) =>
   t === "try" ? "Try It" : t === "growth" ? "Growth" : "Power";
 
+export const hueBg = (h: Track["hue"]) =>
+  h === "pink" ? "bg-pink" : h === "yellow" ? "bg-yellow" : h === "lavender" ? "bg-lavender" : "bg-blush";
+
 export const AGENTS = [
   { name: "Raya", job: "Life design — scheduling, planning, home admin, mental load" },
   { name: "Zuri", job: "Strategy and clarity — decisions, business thinking, career moves" },
