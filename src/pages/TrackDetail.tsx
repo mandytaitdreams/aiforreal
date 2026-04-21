@@ -27,21 +27,42 @@ const tierLabel = (t: string) => t === "try" ? "Try It" : t === "growth" ? "Grow
 const youtubeEmbedUrl = (url: string): string | null => {
   try {
     const u = new URL(url);
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const params = `?enablejsapi=1&origin=${encodeURIComponent(origin)}&rel=0`;
     // playlist
     const list = u.searchParams.get("list");
-    if (list) return `https://www.youtube.com/embed/videoseries?list=${list}`;
+    if (list) return `https://www.youtube.com/embed/videoseries${params}&list=${list}`;
     // watch?v=
     const v = u.searchParams.get("v");
-    if (v) return `https://www.youtube.com/embed/${v}`;
+    if (v) return `https://www.youtube.com/embed/${v}${params}`;
     // youtu.be/<id>
     if (u.hostname.includes("youtu.be")) {
       const id = u.pathname.replace(/^\//, "").split("/")[0];
-      if (id) return `https://www.youtube.com/embed/${id}`;
+      if (id) return `https://www.youtube.com/embed/${id}${params}`;
     }
     // /embed/<id> already
-    if (u.pathname.startsWith("/embed/")) return url;
+    if (u.pathname.startsWith("/embed/")) return url + (url.includes("?") ? "&" : "?") + "enablejsapi=1";
     return null;
   } catch { return null; }
+};
+
+const fmtTime = (sec: number) => {
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.floor(sec % 60);
+  return h > 0 ? `${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}` : `${m}:${String(s).padStart(2,"0")}`;
+};
+
+const seekIframeTo = (iframe: HTMLIFrameElement | null, seconds: number) => {
+  if (!iframe || !iframe.contentWindow) return;
+  iframe.contentWindow.postMessage(JSON.stringify({
+    event: "command",
+    func: "seekTo",
+    args: [seconds, true],
+  }), "*");
+  iframe.contentWindow.postMessage(JSON.stringify({
+    event: "command", func: "playVideo", args: [],
+  }), "*");
 };
 
 export default function TrackDetail() {
