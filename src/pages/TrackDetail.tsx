@@ -83,6 +83,7 @@ export default function TrackDetail() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [seedPrompt, setSeedPrompt] = useState<string | undefined>();
+  const [audioMode, setAudioMode] = useState<Record<string, "watch" | "listen">>({});
   const [tab, setTab] = useState(() => searchParams.get("tab") || "videos");
   const playerRefs = useRef<Record<string, HTMLIFrameElement | null>>({});
 
@@ -197,30 +198,23 @@ export default function TrackDetail() {
               {videos.length === 0 ? <Empty label="Videos coming soon" /> : (
                 <div className="grid md:grid-cols-2 gap-5">
                   {videos.map(v => (
-                    <div key={v.id} id={`item-${v.id}`} className="p-6 rounded-3xl bg-card border border-border shadow-soft scroll-mt-24">
-                      <div className="aspect-video rounded-2xl bg-blush flex items-center justify-center mb-4">
-                        {v.youtube_id ? (
-                          <iframe className="w-full h-full rounded-2xl" src={`https://www.youtube.com/embed/${v.youtube_id}`} allowFullScreen />
-                        ) : (
-                          <PlayCircle className="w-12 h-12 text-pink/40" />
-                        )}
-                      </div>
-                      <div className="flex items-start justify-between gap-3">
-                        <h3 className="font-display font-bold text-lg">{v.title}</h3>
-                        <SaveBtn saved={savedIds.has(v.id)} onClick={() => toggleSave(v.id, "video")} />
-                      </div>
-                      {v.description && <p className="text-sm text-muted-foreground mt-2">{v.description}</p>}
-                      <div className="flex flex-wrap gap-1.5 mt-3">
-                        <Badge variant="secondary" className="rounded-full">{v.duration_minutes} min</Badge>
-                        {v.questions_answered?.slice(0, 2).map((q, i) => <Badge key={i} variant="outline" className="rounded-full">{q}</Badge>)}
-                      </div>
-                    </div>
+                    <VideoCard
+                      key={v.id} v={v}
+                      saved={savedIds.has(v.id)}
+                      onSave={() => toggleSave(v.id, "video")}
+                      mode={audioMode[v.id] ?? "watch"}
+                      onModeChange={(m) => setAudioMode(prev => ({ ...prev, [v.id]: m }))}
+                      onTryInChat={() => tryInChat(`Help me apply this video to my situation: "${v.title}". ${v.description ?? ""}`.trim())}
+                    />
                   ))}
                 </div>
               )}
             </TabsContent>
 
             <TabsContent value="prompts" className="mt-8">
+              <div className="flex justify-end mb-4">
+                <PromptGenerator trackTitle={track.title} onUseInChat={(t) => tryInChat(t)} />
+              </div>
               {prompts.length === 0 ? <Empty label="Prompts coming soon" /> : (
                 <div className="grid md:grid-cols-2 gap-5">
                   {prompts.map(p => (
@@ -270,6 +264,11 @@ export default function TrackDetail() {
                           dangerouslySetInnerHTML={{ __html: sanitizeHtml(t.html_content) }}
                         />
                       )}
+                      <div className="flex gap-2 mt-4">
+                        <Button size="sm" onClick={() => tryInChat(`Walk me through how to use the toolkit "${t.name}" for my situation. ${t.description}`)} className="rounded-full bg-pink text-white hover:bg-pink/90">
+                          <Sparkles className="w-3.5 h-3.5 mr-1.5"/> Try in chat
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
