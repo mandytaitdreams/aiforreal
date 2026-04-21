@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { NotificationsBell } from "./NotificationsBell";
 
 export const SiteHeader = () => {
   const { user, signOut } = useAuth();
@@ -24,6 +25,8 @@ export const SiteHeader = () => {
             <>
               <Link to="/dashboard" className="hover:text-[#ff0054] transition-colors">Dashboard</Link>
               <Link to="/chat" className="hover:text-[#ff0054] transition-colors">AI Chat</Link>
+              <Link to="/community" className="hover:text-[#ff0054] transition-colors">Community</Link>
+              <Link to="/events" className="hover:text-[#ff0054] transition-colors">Events</Link>
               <Link to="/library" className="hover:text-[#ff0054] transition-colors">Saved Library</Link>
               {isAdmin && <Link to="/admin" className="hover:text-[#ff0054] transition-colors">Admin</Link>}
             </>
@@ -36,7 +39,11 @@ export const SiteHeader = () => {
         </nav>
         <div className="flex items-center gap-2">
           {user ? (
-            <Button variant="outline" size="sm" className="rounded-full border-[#ff0054]/30 text-[#ff0054] hover:bg-[#ff0054] hover:text-white" onClick={() => { signOut(); nav("/"); }}>Sign out</Button>
+            <>
+              <NotificationsBell />
+              <Button variant="ghost" size="sm" className="rounded-full" onClick={() => nav("/profile")}>Profile</Button>
+              <Button variant="outline" size="sm" className="rounded-full border-[#ff0054]/30 text-[#ff0054] hover:bg-[#ff0054] hover:text-white" onClick={() => { signOut(); nav("/"); }}>Sign out</Button>
+            </>
           ) : (
             <>
               <Button variant="ghost" size="sm" className="rounded-full" onClick={() => nav("/auth")}>Log in</Button>

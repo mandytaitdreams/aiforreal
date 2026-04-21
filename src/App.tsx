@@ -13,6 +13,10 @@ import Pricing from "./pages/Pricing.tsx";
 import Library from "./pages/Library.tsx";
 import Admin from "./pages/Admin.tsx";
 import ChatHub from "./pages/ChatHub.tsx";
+import Events from "./pages/Events.tsx";
+import Community from "./pages/Community.tsx";
+import Profile from "./pages/Profile.tsx";
+import { MobileBottomNav } from "./components/MobileBottomNav";
 import { AuthProvider } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -34,9 +38,13 @@ const App = () => (
             <Route path="/library" element={<Library />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/chat" element={<ChatHub />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/profile" element={<Profile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <MobileBottomNav />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

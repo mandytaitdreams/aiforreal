@@ -1,0 +1,1 @@
+drop policy if exists "system inserts notifications" on public.notifications;
