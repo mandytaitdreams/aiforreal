@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export const FinalCTA = () => {
   const nav = useNavigate();
+  const { user } = useAuth();
+  const go = () => nav(user ? "/dashboard" : "/onboarding");
   return (
     <section className="py-24 md:py-32 bg-[#2a1b3d] text-white relative overflow-hidden">
       <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-[#ff0054]/25 blur-3xl" />
@@ -22,7 +25,7 @@ export const FinalCTA = () => {
         <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             size="lg"
-            onClick={() => nav("/onboarding")}
+            onClick={go}
             className="bg-[#ff0054] text-white border-2 border-transparent hover:bg-white hover:text-[#ff0054] hover:border-[#ff0054] shadow-pink-lg text-base h-14 px-9 rounded-full font-bold"
           >
             Get my first AI win — $29/month <ArrowRight className="ml-2 w-5 h-5" />
@@ -30,7 +33,7 @@ export const FinalCTA = () => {
           <Button
             size="lg"
             variant="outline"
-            onClick={() => nav("/onboarding")}
+            onClick={go}
             className="bg-transparent text-white border-2 border-white/30 hover:bg-white hover:text-[#2a1b3d] h-14 px-7 rounded-full font-bold"
           >
             Start smaller — $9/month
