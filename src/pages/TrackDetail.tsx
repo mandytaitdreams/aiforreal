@@ -25,7 +25,8 @@ export default function TrackDetail() {
     </div>
   );
 
-  const tier = profile?.tier === "free" ? "try" : profile?.tier ?? "try";
+  // DEV: unlock all tiers in this environment
+  const tier = "power";
   const tierOrder = { try: 0, growth: 1, power: 2 } as const;
 
   return (
@@ -54,7 +55,7 @@ export default function TrackDetail() {
           </div>
           <div className="space-y-3">
             {track.lessons.map((l, i) => {
-              const locked = tierOrder[track.tier] > tierOrder[tier as keyof typeof tierOrder];
+              const locked = false;
               return (
                 <div key={i} className="flex items-center gap-4 p-5 rounded-2xl bg-card border border-border shadow-soft hover:shadow-card transition-all">
                   <span className="font-display font-black text-2xl text-muted-foreground/40 w-8">{String(i+1).padStart(2,"0")}</span>
