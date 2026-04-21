@@ -577,6 +577,8 @@ export type Database = {
       }
       videos: {
         Row: {
+          audio_path: string | null
+          audio_url: string | null
           created_at: string
           description: string | null
           duration_minutes: number
@@ -592,6 +594,8 @@ export type Database = {
           youtube_id: string | null
         }
         Insert: {
+          audio_path?: string | null
+          audio_url?: string | null
           created_at?: string
           description?: string | null
           duration_minutes?: number
@@ -607,6 +611,8 @@ export type Database = {
           youtube_id?: string | null
         }
         Update: {
+          audio_path?: string | null
+          audio_url?: string | null
           created_at?: string
           description?: string | null
           duration_minutes?: number
