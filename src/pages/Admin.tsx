@@ -274,3 +274,60 @@ export default function Admin() {
     </div>
   );
 }
+
+type Chapter = { label: string; t: number };
+
+function ChaptersEditor({ value, onChange }: { value: Chapter[]; onChange: (next: Chapter[]) => void }) {
+  const update = (i: number, patch: Partial<Chapter>) => {
+    const next = value.map((c, idx) => idx === i ? { ...c, ...patch } : c);
+    onChange(next);
+  };
+  const add = () => onChange([...value, { label: "", t: 0 }]);
+  const remove = (i: number) => onChange(value.filter((_, idx) => idx !== i));
+
+  // Accept "1:23" or "1:02:03" or seconds
+  const parseTime = (s: string): number => {
+    const trimmed = s.trim();
+    if (/^\d+$/.test(trimmed)) return Number(trimmed);
+    const parts = trimmed.split(":").map(p => Number(p));
+    if (parts.some(isNaN)) return 0;
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return 0;
+  };
+  const fmt = (sec: number) => {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = Math.floor(sec % 60);
+    return h > 0 ? `${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}` : `${m}:${String(s).padStart(2,"0")}`;
+  };
+
+  return (
+    <div className="space-y-2 pt-2 border-t border-border">
+      <div className="flex items-center justify-between">
+        <Label>Chapter markers (optional)</Label>
+        <Button type="button" size="sm" variant="outline" className="rounded-full" onClick={add}><Plus className="w-3.5 h-3.5 mr-1"/>Add</Button>
+      </div>
+      {value.length === 0 && <p className="text-xs text-muted-foreground">Add timestamps so members can jump to key moments inside the embedded player.</p>}
+      {value.map((c, i) => (
+        <div key={i} className="flex gap-2 items-center">
+          <Input
+            placeholder="Chapter title"
+            value={c.label}
+            onChange={e => update(i, { label: e.target.value })}
+            className="rounded-xl flex-1"
+          />
+          <Input
+            placeholder="0:00"
+            defaultValue={fmt(c.t || 0)}
+            onBlur={e => update(i, { t: parseTime(e.target.value) })}
+            className="rounded-xl w-24 font-mono text-sm"
+          />
+          <Button type="button" size="sm" variant="outline" className="rounded-full text-destructive border-destructive/30" onClick={() => remove(i)}>
+            <Trash2 className="w-3.5 h-3.5"/>
+          </Button>
+        </div>
+      ))}
+    </div>
+  );
+}
