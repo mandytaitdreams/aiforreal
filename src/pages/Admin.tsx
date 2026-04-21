@@ -243,6 +243,12 @@ export default function Admin() {
                     )}
                   </div>
                 ))}
+                {type === "videos" && (
+                  <AudioFileField
+                    audioPath={editing.audio_path ?? ""}
+                    onChange={(audio_path) => setEditing({ ...editing, audio_path })}
+                  />
+                )}
                 {type === "playlists" && (
                   <ChaptersEditor
                     value={Array.isArray(editing.chapters) ? editing.chapters : []}
@@ -277,6 +283,65 @@ export default function Admin() {
 }
 
 type Chapter = { label: string; t: number };
+
+function AudioFileField({ audioPath, onChange }: { audioPath: string; onChange: (path: string) => void }) {
+  const [busy, setBusy] = useState(false);
+
+  const publicUrl = audioPath
+    ? supabase.storage.from("audio").getPublicUrl(audioPath).data.publicUrl
+    : "";
+
+  const upload = async (file: File) => {
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) { toast.error("File must be under 50MB"); return; }
+    setBusy(true);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "mp3";
+      const key = `videos/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("audio").upload(key, file, {
+        cacheControl: "31536000", upsert: false, contentType: file.type || "audio/mpeg",
+      });
+      if (error) throw error;
+      onChange(key);
+      toast.success("Audio uploaded");
+    } catch (e: any) {
+      toast.error(e.message || "Upload failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="space-y-1.5 pt-2 border-t border-border">
+      <Label className="flex items-center gap-1.5"><Headphones className="w-3.5 h-3.5"/> Audio file (optional, alternative to embed link)</Label>
+      <div className="flex items-center gap-2">
+        <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-input bg-background hover:bg-accent cursor-pointer text-sm">
+          <Upload className="w-3.5 h-3.5"/>
+          <span>{busy ? "Uploading…" : "Choose file"}</span>
+          <input
+            type="file"
+            accept="audio/*,.mp3,.m4a,.wav,.ogg"
+            className="sr-only"
+            disabled={busy}
+            onChange={e => { const f = e.target.files?.[0]; if (f) upload(f); e.currentTarget.value = ""; }}
+          />
+        </label>
+        {audioPath && (
+          <Button type="button" variant="outline" size="sm" className="rounded-full text-destructive border-destructive/30" onClick={() => onChange("")}>
+            Remove
+          </Button>
+        )}
+      </div>
+      {audioPath && (
+        <div className="mt-2">
+          <audio controls preload="none" src={publicUrl} className="w-full" />
+          <p className="text-xs text-muted-foreground mt-1 truncate">{audioPath}</p>
+        </div>
+      )}
+      <p className="text-xs text-muted-foreground">Either upload a file here or paste an embed link above. Members get a "Listen instead" toggle when audio exists.</p>
+    </div>
+  );
+}
 
 function ChaptersEditor({ value, onChange }: { value: Chapter[]; onChange: (next: Chapter[]) => void }) {
   const update = (i: number, patch: Partial<Chapter>) => {
