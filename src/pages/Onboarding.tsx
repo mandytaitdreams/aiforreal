@@ -136,7 +136,7 @@ export default function Onboarding() {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{t.emoji}</span>
+                    <span className={`w-10 h-10 rounded-full ${hueBg(t.hue)} flex items-center justify-center font-display font-black text-sm text-foreground`}>{t.number}</span>
                     <div>
                       <div className="font-display font-bold leading-tight">{t.title}</div>
                       <div className="text-xs text-muted-foreground italic">with {t.agentName}</div>
@@ -154,11 +154,11 @@ export default function Onboarding() {
               ← Pick a different track
             </button>
             <div className="flex items-center gap-3 mb-2">
-              <span className="text-3xl">{track.emoji}</span>
+              <span className={`w-12 h-12 rounded-full ${hueBg(track.hue)} flex items-center justify-center font-display font-black text-base text-foreground`}>{track.number}</span>
               <span className="text-sm text-muted-foreground">Meet <strong className="text-foreground">{track.agentName}</strong> · {track.agentRole}</span>
             </div>
             <h1 className="font-display font-black text-4xl md:text-5xl leading-tight">
-              What's the <span className="italic text-gradient-sunrise">one thing</span><br />
+              What's the <span className="text-gradient-brand">one thing</span><br />
               you want off your plate today?
             </h1>
             <p className="mt-4 text-muted-foreground">One sentence is plenty. Be honest — {track.agentName} is here for it.</p>
@@ -172,7 +172,7 @@ export default function Onboarding() {
               onClick={generate}
               disabled={!challenge.trim()}
               size="lg"
-              className="mt-6 h-12 px-8 rounded-full bg-gradient-sunrise text-primary-foreground border-0 shadow-warm hover:opacity-95 font-semibold"
+              className="mt-6 h-12 px-8 rounded-full bg-gradient-brand text-primary-foreground border-0 shadow-pink hover:opacity-95 font-semibold"
             >
               <Sparkles className="w-4 h-4 mr-2" /> Get my first win
             </Button>
@@ -182,7 +182,7 @@ export default function Onboarding() {
         {step === "result" && track && (
           <div className="animate-fade-up">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-2xl">{track.emoji}</span>
+              <span className={`w-10 h-10 rounded-full ${hueBg(track.hue)} flex items-center justify-center font-display font-black text-sm`}>{track.number}</span>
               <div className="text-sm">
                 <div className="font-bold">{track.agentName}</div>
                 <div className="text-muted-foreground italic">{track.agentRole}</div>
@@ -190,7 +190,7 @@ export default function Onboarding() {
               {streaming && <Loader2 className="w-4 h-4 animate-spin text-primary ml-2" />}
             </div>
             <div className="bg-card border border-border rounded-3xl p-8 shadow-card relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-sunrise" />
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-brand" />
               <div className="prose prose-sm max-w-none whitespace-pre-wrap text-foreground leading-relaxed">
                 {result || (streaming ? "Thinking with you…" : "")}
               </div>

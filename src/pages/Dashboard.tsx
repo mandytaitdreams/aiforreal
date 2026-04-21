@@ -81,9 +81,9 @@ export default function Dashboard() {
                   to={locked ? "/pricing" : `/track/${t.slug}`}
                   className="group p-6 rounded-3xl bg-card border border-border shadow-card hover:shadow-warm hover:-translate-y-1 transition-all relative overflow-hidden"
                 >
-                  <div className={`absolute top-0 left-0 right-0 h-1.5 ${t.hue}`} />
+                  <div className={`absolute top-0 left-0 right-0 h-1.5 ${hueBg(t.hue)}`} />
                   <div className="flex items-center justify-between">
-                    <span className="text-3xl">{t.emoji}</span>
+                    <span className="font-display font-black text-2xl text-muted-foreground/40">{t.number}</span>
                     {locked && <span className="text-xs px-2 py-1 rounded-full bg-secondary text-secondary-foreground">Power tier</span>}
                     {!locked && pct > 0 && <span className="text-xs px-2 py-1 rounded-full bg-accent/20 text-accent-foreground font-semibold">{pct}%</span>}
                   </div>
@@ -91,7 +91,7 @@ export default function Dashboard() {
                   <p className="mt-1 text-xs text-muted-foreground">with {t.agentName}</p>
                   {!locked && (
                     <div className="mt-4 h-1 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-sunrise transition-all" style={{ width: `${pct}%` }} />
+                      <div className="h-full bg-gradient-brand transition-all" style={{ width: `${pct}%` }} />
                     </div>
                   )}
                 </Link>

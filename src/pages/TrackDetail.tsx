@@ -32,16 +32,16 @@ export default function TrackDetail() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main>
-        <section className={`${track.hue} grain text-secondary-foreground`}>
+        <section className={`${hueBg(track.hue)} text-foreground`}>
           <div className="container py-16">
-            <Link to="/dashboard" className="text-sm text-secondary-foreground/80 hover:text-secondary-foreground">← Dashboard</Link>
+            <Link to="/dashboard" className="text-sm text-foreground/70 hover:text-foreground">← Dashboard</Link>
             <div className="mt-6 flex items-start gap-6">
-              <span className="text-6xl">{track.emoji}</span>
+              <span className="w-20 h-20 rounded-full bg-card flex items-center justify-center font-display font-black text-3xl text-foreground shadow-soft">{track.number}</span>
               <div>
                 <span className="text-xs uppercase tracking-[0.2em] font-bold">{tierLabel(track.tier)} track · {track.number}</span>
                 <h1 className="mt-2 font-display font-black text-4xl md:text-5xl leading-tight max-w-2xl">{track.title}</h1>
-                <p className="mt-3 italic text-secondary-foreground/90 text-lg">{track.tagline}</p>
-                <p className="mt-4 max-w-2xl text-secondary-foreground/80">{track.description}</p>
+                <p className="mt-3 font-handwritten text-2xl">{track.tagline}</p>
+                <p className="mt-4 max-w-2xl text-foreground/80">{track.description}</p>
               </div>
             </div>
           </div>
