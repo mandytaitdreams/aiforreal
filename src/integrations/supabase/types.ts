@@ -1008,6 +1008,38 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ai_messages_today: { Args: { _user: string }; Returns: number }
+      analytics_ai_usage: {
+        Args: { _days?: number }
+        Returns: {
+          agent_id: string
+          agent_name: string
+          conversations: number
+          messages: number
+        }[]
+      }
+      analytics_retention: {
+        Args: never
+        Returns: {
+          bucket: string
+          users: number
+        }[]
+      }
+      analytics_signups: {
+        Args: { _days?: number }
+        Returns: {
+          day: string
+          signups: number
+        }[]
+      }
+      analytics_top_saves: {
+        Args: { _limit?: number }
+        Returns: {
+          item_id: string
+          item_type: string
+          saves: number
+        }[]
+      }
       award_badge: {
         Args: { _code: string; _user: string }
         Returns: undefined
