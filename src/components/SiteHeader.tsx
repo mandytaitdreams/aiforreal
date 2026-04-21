@@ -20,12 +20,19 @@ export const SiteHeader = () => {
       <div className="container glass-effect rounded-full px-5 py-2.5 flex items-center justify-between shadow-soft">
         <Logo />
         <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-foreground/70">
-          <Link to="/" className="hover:text-[#ff0054] transition-colors">Home</Link>
-          <Link to="/pricing" className="hover:text-[#ff0054] transition-colors">Pricing</Link>
-          {user && <Link to="/dashboard" className="hover:text-[#ff0054] transition-colors">Dashboard</Link>}
-          {user && <Link to="/chat" className="hover:text-[#ff0054] transition-colors">AI Chat</Link>}
-          {user && <Link to="/library" className="hover:text-[#ff0054] transition-colors">Library</Link>}
-          {isAdmin && <Link to="/admin" className="hover:text-[#ff0054] transition-colors">Admin</Link>}
+          {user ? (
+            <>
+              <Link to="/dashboard" className="hover:text-[#ff0054] transition-colors">Dashboard</Link>
+              <Link to="/chat" className="hover:text-[#ff0054] transition-colors">AI Chat</Link>
+              <Link to="/library" className="hover:text-[#ff0054] transition-colors">Saved Library</Link>
+              {isAdmin && <Link to="/admin" className="hover:text-[#ff0054] transition-colors">Admin</Link>}
+            </>
+          ) : (
+            <>
+              <Link to="/" className="hover:text-[#ff0054] transition-colors">Home</Link>
+              <Link to="/pricing" className="hover:text-[#ff0054] transition-colors">Pricing</Link>
+            </>
+          )}
         </nav>
         <div className="flex items-center gap-2">
           {user ? (
