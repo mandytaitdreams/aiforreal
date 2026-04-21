@@ -194,6 +194,14 @@ export default function Admin() {
             </Select>
           </div>
           <Button onClick={startNew} className="rounded-full bg-pink text-white hover:bg-pink/90"><Plus className="w-4 h-4 mr-1.5"/>New {type.slice(0, -1)}</Button>
+          <BulkUpload
+            key={`${type}-${trackId}`}
+            table={type}
+            fields={TYPE_FIELDS[type]}
+            fixed={{ track_id: trackId }}
+            label={type}
+            onDone={loadRows}
+          />
         </div>
 
         <Tabs value={type} onValueChange={(v) => setType(v as ContentType)} className="mt-6">
