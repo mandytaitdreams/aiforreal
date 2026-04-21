@@ -197,3 +197,74 @@ export const AGENTS = [
   { name: "Aria", job: "Content strategy — newsletters, blog posts, SEO writing" },
   { name: "Echo", job: "Summaries — turns long documents into decisions in seconds" },
 ];
+
+export type QuizOption = { label: string; scores: Partial<Record<string, number>> };
+export type QuizQuestion = { id: string; prompt: string; options: QuizOption[] };
+
+export const QUIZ_QUESTIONS: QuizQuestion[] = [
+  {
+    id: "q1",
+    prompt: "Where do you want help first?",
+    options: [
+      { label: "Home & life admin", scores: { "home-life-admin": 5 } },
+      { label: "At work", scores: { "your-9-to-5": 5 } },
+      { label: "In my business", scores: { "ai-business-school": 5 } },
+      { label: "Studying", scores: { "ai-for-students": 5 } },
+      { label: "Creating content", scores: { "ai-for-creators": 5 } },
+      { label: "Leading a team", scores: { "leading-with-ai": 5 } },
+    ],
+  },
+  {
+    id: "q2",
+    prompt: "What's eating most of your energy right now?",
+    options: [
+      { label: "Mental load", scores: { "home-life-admin": 2 } },
+      { label: "Career decisions", scores: { "your-9-to-5": 2 } },
+      { label: "Selling my offer", scores: { "ai-business-school": 2, "personal-brand": 1 } },
+      { label: "Writing & content", scores: { "ai-for-creators": 2, "personal-brand": 1 } },
+      { label: "Learning new things", scores: { "ai-foundations": 2, "ai-for-students": 1 } },
+      { label: "People & teams", scores: { "leading-with-ai": 2 } },
+    ],
+  },
+  {
+    id: "q3",
+    prompt: "How comfortable are you with AI today?",
+    options: [
+      { label: "Total beginner", scores: { "ai-foundations": 3 } },
+      { label: "I've dabbled", scores: { "ai-foundations": 1 } },
+      { label: "I use it weekly", scores: {} },
+      { label: "I want to go deeper", scores: { "ai-power-users": 3 } },
+    ],
+  },
+  {
+    id: "q4",
+    prompt: "What would make this week feel lighter?",
+    options: [
+      { label: "A plan I can follow", scores: { "home-life-admin": 1, "ai-for-students": 1 } },
+      { label: "A hard conversation handled", scores: { "your-9-to-5": 1 } },
+      { label: "A piece of content done", scores: { "ai-for-creators": 1, "personal-brand": 1 } },
+      { label: "A decision made", scores: { "leading-with-ai": 1, "ai-business-school": 1 } },
+      { label: "Time back", scores: { "home-life-admin": 1 } },
+    ],
+  },
+];
+
+export function suggestTrack(answers: Record<string, number>): Track {
+  const scores: Record<string, number> = {};
+  for (const q of QUIZ_QUESTIONS) {
+    const idx = answers[q.id];
+    if (idx == null) continue;
+    const opt = q.options[idx];
+    if (!opt) continue;
+    for (const [slug, n] of Object.entries(opt.scores)) {
+      scores[slug] = (scores[slug] ?? 0) + (n ?? 0);
+    }
+  }
+  let best = TRACKS[0];
+  let bestScore = -1;
+  for (const t of TRACKS) {
+    const s = scores[t.slug] ?? 0;
+    if (s > bestScore) { bestScore = s; best = t; }
+  }
+  return best;
+}
