@@ -34,6 +34,7 @@ const TYPE_FIELDS: Record<ContentType, { name: string; label: string; type?: "te
     { name: "youtube_id", label: "YouTube ID (optional)" },
     { name: "duration_minutes", label: "Duration (min)", type: "number" },
     { name: "audio_url", label: "Audio link / embed URL (Spotify, SoundCloud, .mp3 …)", type: "url" },
+    { name: "presentation_url", label: "Presentation link (Google Slides, Notion, PDF…)", type: "url" },
     { name: "transcript", label: "Transcript (optional — paste or generate from audio)", type: "textarea" },
     { name: "sort_order", label: "Sort order", type: "number" },
   ],
