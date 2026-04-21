@@ -452,11 +452,17 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          current_streak_days: number
           display_name: string | null
           first_win: string | null
           id: string
+          last_active_date: string | null
+          level: string
+          longest_streak_days: number
           onboarding_complete: boolean
+          onboarding_goal: string | null
           primary_track: string | null
+          referral_code: string | null
           streak_days: number
           tier: Database["public"]["Enums"]["membership_tier"]
           updated_at: string
@@ -466,11 +472,17 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          current_streak_days?: number
           display_name?: string | null
           first_win?: string | null
           id?: string
+          last_active_date?: string | null
+          level?: string
+          longest_streak_days?: number
           onboarding_complete?: boolean
+          onboarding_goal?: string | null
           primary_track?: string | null
+          referral_code?: string | null
           streak_days?: number
           tier?: Database["public"]["Enums"]["membership_tier"]
           updated_at?: string
@@ -480,11 +492,17 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          current_streak_days?: number
           display_name?: string | null
           first_win?: string | null
           id?: string
+          last_active_date?: string | null
+          level?: string
+          longest_streak_days?: number
           onboarding_complete?: boolean
+          onboarding_goal?: string | null
           primary_track?: string | null
+          referral_code?: string | null
           streak_days?: number
           tier?: Database["public"]["Enums"]["membership_tier"]
           updated_at?: string
@@ -546,6 +564,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      referrals: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          invitee_user_id: string
+          inviter_user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          invitee_user_id: string
+          inviter_user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          invitee_user_id?: string
+          inviter_user_id?: string
+        }
+        Relationships: []
       }
       saved_items: {
         Row: {
@@ -709,6 +751,38 @@ export type Database = {
           },
         ]
       }
+      track_levels: {
+        Row: {
+          id: string
+          stage: string
+          track_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          stage?: string
+          track_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          stage?: string
+          track_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "track_levels_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tracks: {
         Row: {
           agent_name: string
@@ -754,6 +828,65 @@ export type Database = {
           tier?: Database["public"]["Enums"]["membership_tier"]
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_actions: {
+        Row: {
+          action_type: string
+          created_at: string
+          id: string
+          meta: Json
+          ref_id: string | null
+          track_id: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          id?: string
+          meta?: Json
+          ref_id?: string | null
+          track_id?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          id?: string
+          meta?: Json
+          ref_id?: string | null
+          track_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_actions_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_badges: {
+        Row: {
+          awarded_at: string
+          badge_code: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          awarded_at?: string
+          badge_code: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          awarded_at?: string
+          badge_code?: string
+          id?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -875,12 +1008,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_badge: {
+        Args: { _code: string; _user: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      track_completion: {
+        Args: { _track: string; _user: string }
+        Returns: number
+      }
+      week_momentum: {
+        Args: { _user: string }
+        Returns: {
+          challenges: number
+          lessons: number
+          prompts: number
+          wins: number
+        }[]
       }
     }
     Enums: {

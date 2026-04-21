@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Clock, ExternalLink, Download, Users, Video } from "lucide-react";
 import { downloadICS } from "@/lib/ics";
 import { toast } from "sonner";
+import { logAction } from "@/lib/actions";
 
 type EventRow = {
   id: string; title: string; description: string | null;
@@ -44,6 +45,7 @@ export default function Events() {
       const { error } = await supabase.from("event_rsvps").insert({ event_id: id, user_id: user.id });
       if (error) return toast.error(error.message);
       setRsvps(new Set([...rsvps, id]));
+      void logAction("event_attended", { refId: id });
       toast.success("You're in");
     }
   };

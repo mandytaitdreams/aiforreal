@@ -6,6 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Flame, Sparkles, Trophy, Bookmark, MessageCircle, ArrowRight } from "lucide-react";
 import { Calendar, Star } from "lucide-react";
 import { GlobalSearch } from "@/components/GlobalSearch";
+import { MomentumBar } from "@/components/MomentumBar";
+import { TrackRing } from "@/components/TrackRing";
+import { levelForXp } from "@/lib/actions";
 
 type DBTrack = { id: string; slug: string; number: string; title: string; tagline: string; agent_name: string; hue: string; tier: string };
 const hueBg = (h: string) => h === "pink" ? "bg-pink" : h === "yellow" ? "bg-yellow" : h === "lavender" ? "bg-lavender" : "bg-blush";
@@ -39,7 +42,12 @@ export default function Dashboard() {
       ]);
       setTracks((tr ?? []) as DBTrack[]);
       const m: Record<string, number> = {};
-      prog?.forEach(r => { m[r.track_slug] = r.percent_complete; });
+      // Compute live completion via RPC for each track (gamification weighted formula).
+      const rows = (tr ?? []) as DBTrack[];
+      const pcts = await Promise.all(rows.map(t =>
+        supabase.rpc("track_completion", { _user: user.id, _track: t.id }).then(r => [t.slug, (r.data as number) ?? 0] as const)
+      ));
+      pcts.forEach(([slug, pct]) => { m[slug] = pct; });
       setProgress(m);
       setSavedCount(saves?.length ?? 0);
       if (conv) setRecentConv({ id: (conv as any).id, title: (conv as any).title, agent: (conv as any).agents?.name ?? "Agent", track_slug: (conv as any).tracks?.slug ?? null });
@@ -77,13 +85,17 @@ export default function Dashboard() {
               <div className="flex gap-3">
                 <Stat icon={<Flame className="w-4 h-4 text-pink" />} label="Streak" value={`${profile.streak_days}d`} />
                 <Stat icon={<Sparkles className="w-4 h-4 text-accent" />} label="XP" value={profile.xp.toString()} />
-                <Stat icon={<Trophy className="w-4 h-4 text-secondary" />} label="Tier" value={tierLabel(tier as any)} />
+                <Stat icon={<Trophy className="w-4 h-4 text-secondary" />} label="Level" value={levelForXp(profile.xp).label} />
               </div>
             </div>
             <div className="mt-8 max-w-2xl">
               <GlobalSearch />
             </div>
           </div>
+        </section>
+
+        <section className="container pt-8">
+          <MomentumBar />
         </section>
 
         {/* Resume + Quick actions */}
@@ -179,13 +191,16 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <span className="font-display font-black text-2xl text-muted-foreground/40">{t.number}</span>
                     {locked && <span className="text-xs px-2 py-1 rounded-full bg-secondary text-secondary-foreground">Power tier</span>}
-                    {!locked && pct > 0 && <span className="text-xs px-2 py-1 rounded-full bg-accent/20 text-accent-foreground font-semibold">{pct}%</span>}
+                    {!locked && <TrackRing pct={pct} size={44} />}
                   </div>
                   <h3 className="mt-4 font-display font-bold text-lg leading-tight">{t.title}</h3>
                   <p className="mt-1 text-xs text-muted-foreground">with {t.agent_name}</p>
                   {!locked && (
-                    <div className="mt-4 h-1 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-brand transition-all" style={{ width: `${pct}%` }} />
+                    <div className="mt-4">
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{stageFromPct(pct)}</div>
+                      <div className="mt-1 h-1 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-brand transition-all" style={{ width: `${pct}%` }} />
+                      </div>
                     </div>
                   )}
                 </Link>
@@ -204,3 +219,10 @@ const Stat = ({ icon, label, value }: { icon: React.ReactNode; label: string; va
     <div className="font-display font-black text-2xl text-foreground">{value}</div>
   </div>
 );
+
+function stageFromPct(pct: number): string {
+  if (pct >= 80) return "Mastery";
+  if (pct >= 50) return "Practising";
+  if (pct >= 20) return "Building";
+  return "Starter";
+}
