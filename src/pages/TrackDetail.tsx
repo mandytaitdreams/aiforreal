@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { AgentChat } from "@/components/track/AgentChat";
 import { Bookmark, BookmarkCheck, Copy, ExternalLink, PlayCircle, Sparkles, Wrench, FileText, Youtube, MessageCircle, Target } from "lucide-react";
 import { toast } from "sonner";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 type Track = { id: string; slug: string; number: string; title: string; tagline: string; description: string; agent_name: string; agent_role: string; hue: string; tier: string };
 type Agent = { id: string; name: string; role: string; tagline: string; system_prompt: string; model: string };
@@ -16,7 +17,8 @@ type Prompt = { id: string; title: string; body: string; use_case: string; diffi
 type Video = { id: string; title: string; description: string | null; duration_minutes: number; youtube_id: string | null; questions_answered: string[] };
 type Tool = { id: string; name: string; description: string; use_case: string | null; url: string | null; html_content: string | null };
 type Template = { id: string; title: string; body: string; use_case: string; problem_solved: string | null };
-type Playlist = { id: string; title: string; youtube_url: string; creator: string | null; duration_minutes: number | null };
+type Chapter = { label: string; t: number };
+type Playlist = { id: string; title: string; youtube_url: string; creator: string | null; duration_minutes: number | null; chapters: Chapter[] };
 type Challenge = { id: string; title: string; description: string; success_metric: string | null; kind: string };
 
 const hueClass = (h: string) => h === "pink" ? "bg-pink" : h === "yellow" ? "bg-yellow" : h === "lavender" ? "bg-lavender" : "bg-blush";
@@ -25,25 +27,47 @@ const tierLabel = (t: string) => t === "try" ? "Try It" : t === "growth" ? "Grow
 const youtubeEmbedUrl = (url: string): string | null => {
   try {
     const u = new URL(url);
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const params = `?enablejsapi=1&origin=${encodeURIComponent(origin)}&rel=0`;
     // playlist
     const list = u.searchParams.get("list");
-    if (list) return `https://www.youtube.com/embed/videoseries?list=${list}`;
+    if (list) return `https://www.youtube.com/embed/videoseries${params}&list=${list}`;
     // watch?v=
     const v = u.searchParams.get("v");
-    if (v) return `https://www.youtube.com/embed/${v}`;
+    if (v) return `https://www.youtube.com/embed/${v}${params}`;
     // youtu.be/<id>
     if (u.hostname.includes("youtu.be")) {
       const id = u.pathname.replace(/^\//, "").split("/")[0];
-      if (id) return `https://www.youtube.com/embed/${id}`;
+      if (id) return `https://www.youtube.com/embed/${id}${params}`;
     }
     // /embed/<id> already
-    if (u.pathname.startsWith("/embed/")) return url;
+    if (u.pathname.startsWith("/embed/")) return url + (url.includes("?") ? "&" : "?") + "enablejsapi=1";
     return null;
   } catch { return null; }
 };
 
+const fmtTime = (sec: number) => {
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.floor(sec % 60);
+  return h > 0 ? `${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}` : `${m}:${String(s).padStart(2,"0")}`;
+};
+
+const seekIframeTo = (iframe: HTMLIFrameElement | null, seconds: number) => {
+  if (!iframe || !iframe.contentWindow) return;
+  iframe.contentWindow.postMessage(JSON.stringify({
+    event: "command",
+    func: "seekTo",
+    args: [seconds, true],
+  }), "*");
+  iframe.contentWindow.postMessage(JSON.stringify({
+    event: "command", func: "playVideo", args: [],
+  }), "*");
+};
+
 export default function TrackDetail() {
   const { slug } = useParams();
+  const [searchParams] = useSearchParams();
   const { user, loading } = useAuth();
   const nav = useNavigate();
 
@@ -57,9 +81,26 @@ export default function TrackDetail() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [seedPrompt, setSeedPrompt] = useState<string | undefined>();
-  const [tab, setTab] = useState("videos");
+  const [tab, setTab] = useState(() => searchParams.get("tab") || "videos");
+  const playerRefs = useRef<Record<string, HTMLIFrameElement | null>>({});
 
   useEffect(() => { if (!loading && !user) nav("/auth", { replace: true }); }, [loading, user, nav]);
+
+  // Sync tab from URL ?tab= and scroll to anchored item from #item-<id>
+  useEffect(() => {
+    const t = searchParams.get("tab");
+    if (t) setTab(t);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash) return;
+    const tries = [0, 200, 500, 900];
+    tries.forEach(d => setTimeout(() => {
+      const el = document.querySelector(hash);
+      if (el) (el as HTMLElement).scrollIntoView({ behavior: "smooth", block: "center" });
+    }, d));
+  }, [tab, playlists, prompts, videos, tools, templates, challenges]);
 
   useEffect(() => {
     if (!slug) return;
@@ -83,7 +124,7 @@ export default function TrackDetail() {
       setVideos((vd ?? []) as Video[]);
       setTools((tl ?? []) as Tool[]);
       setTemplates((tp ?? []) as Template[]);
-      setPlaylists((pl ?? []) as Playlist[]);
+      setPlaylists(((pl ?? []) as any[]).map(p => ({ ...p, chapters: Array.isArray(p.chapters) ? p.chapters : [] })) as Playlist[]);
       setChallenges((ch ?? []) as Challenge[]);
 
       if (user) {
@@ -154,7 +195,7 @@ export default function TrackDetail() {
               {videos.length === 0 ? <Empty label="Videos coming soon" /> : (
                 <div className="grid md:grid-cols-2 gap-5">
                   {videos.map(v => (
-                    <div key={v.id} className="p-6 rounded-3xl bg-card border border-border shadow-soft">
+                    <div key={v.id} id={`item-${v.id}`} className="p-6 rounded-3xl bg-card border border-border shadow-soft scroll-mt-24">
                       <div className="aspect-video rounded-2xl bg-blush flex items-center justify-center mb-4">
                         {v.youtube_id ? (
                           <iframe className="w-full h-full rounded-2xl" src={`https://www.youtube.com/embed/${v.youtube_id}`} allowFullScreen />
@@ -181,7 +222,7 @@ export default function TrackDetail() {
               {prompts.length === 0 ? <Empty label="Prompts coming soon" /> : (
                 <div className="grid md:grid-cols-2 gap-5">
                   {prompts.map(p => (
-                    <div key={p.id} className="p-6 rounded-3xl bg-card border border-border shadow-soft flex flex-col">
+                    <div key={p.id} id={`item-${p.id}`} className="p-6 rounded-3xl bg-card border border-border shadow-soft flex flex-col scroll-mt-24">
                       <div className="flex items-start justify-between gap-3">
                         <h3 className="font-display font-bold text-lg">{p.title}</h3>
                         <SaveBtn saved={savedIds.has(p.id)} onClick={() => toggleSave(p.id, "prompt")} />
@@ -205,7 +246,7 @@ export default function TrackDetail() {
               {tools.length === 0 ? <Empty label="Toolkit coming soon" /> : (
                 <div className="space-y-6">
                   {tools.map(t => (
-                    <div key={t.id} className="p-6 rounded-3xl bg-card border border-border shadow-soft">
+                    <div key={t.id} id={`item-${t.id}`} className="p-6 rounded-3xl bg-card border border-border shadow-soft scroll-mt-24">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <h3 className="font-display font-bold text-lg">{t.name}</h3>
@@ -224,7 +265,7 @@ export default function TrackDetail() {
                       {t.html_content && (
                         <div
                           className="mt-5 p-5 rounded-2xl bg-blush/50 border border-border prose prose-sm max-w-none prose-headings:font-display prose-headings:text-foreground prose-a:text-pink prose-strong:text-foreground"
-                          dangerouslySetInnerHTML={{ __html: t.html_content }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(t.html_content) }}
                         />
                       )}
                     </div>
@@ -237,7 +278,7 @@ export default function TrackDetail() {
               {templates.length === 0 ? <Empty label="Templates coming soon" /> : (
                 <div className="grid md:grid-cols-2 gap-5">
                   {templates.map(t => (
-                    <div key={t.id} className="p-6 rounded-3xl bg-card border border-border shadow-soft flex flex-col">
+                    <div key={t.id} id={`item-${t.id}`} className="p-6 rounded-3xl bg-card border border-border shadow-soft flex flex-col scroll-mt-24">
                       <div className="flex items-start justify-between gap-3">
                         <h3 className="font-display font-bold text-lg">{t.title}</h3>
                         <SaveBtn saved={savedIds.has(t.id)} onClick={() => toggleSave(t.id, "template")} />
@@ -260,10 +301,17 @@ export default function TrackDetail() {
                   {playlists.map(p => {
                     const embed = youtubeEmbedUrl(p.youtube_url);
                     return (
-                      <div key={p.id} className="p-5 rounded-3xl bg-card border border-border shadow-soft">
+                      <div key={p.id} id={`item-${p.id}`} className="p-5 rounded-3xl bg-card border border-border shadow-soft scroll-mt-24">
                         <div className="aspect-video rounded-2xl overflow-hidden bg-blush flex items-center justify-center mb-4">
                           {embed ? (
-                            <iframe className="w-full h-full" src={embed} title={p.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+                            <iframe
+                              ref={(el) => { playerRefs.current[p.id] = el; }}
+                              className="w-full h-full"
+                              src={embed}
+                              title={p.title}
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
                           ) : (
                             <Youtube className="w-10 h-10 text-pink/40" />
                           )}
@@ -277,6 +325,23 @@ export default function TrackDetail() {
                             YouTube <ExternalLink className="w-3 h-3"/>
                           </a>
                         </div>
+                        {p.chapters && p.chapters.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-border">
+                            <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Chapters</div>
+                            <div className="flex flex-wrap gap-1.5">
+                              {p.chapters.map((c, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => seekIframeTo(playerRefs.current[p.id], c.t)}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blush hover:bg-pink hover:text-white text-xs font-medium transition-colors"
+                                >
+                                  <span className="font-mono opacity-70">{fmtTime(c.t)}</span>
+                                  <span>{c.label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -288,7 +353,7 @@ export default function TrackDetail() {
               {challenges.length === 0 ? <Empty label="Challenges coming soon" /> : (
                 <div className="grid md:grid-cols-3 gap-5">
                   {challenges.map(c => (
-                    <div key={c.id} className="p-6 rounded-3xl bg-gradient-brand text-white shadow-pink">
+                    <div key={c.id} id={`item-${c.id}`} className="p-6 rounded-3xl bg-gradient-brand text-white shadow-pink scroll-mt-24">
                       <Badge className="rounded-full bg-white/20 text-white border-0">{c.kind === "five_day" ? "5-day" : "Quick"}</Badge>
                       <h3 className="mt-3 font-display font-black text-xl">{c.title}</h3>
                       <p className="mt-2 text-sm text-white/90">{c.description}</p>

@@ -176,6 +176,7 @@ export type Database = {
       }
       playlists: {
         Row: {
+          chapters: Json
           created_at: string
           creator: string | null
           duration_minutes: number | null
@@ -186,6 +187,7 @@ export type Database = {
           youtube_url: string
         }
         Insert: {
+          chapters?: Json
           created_at?: string
           creator?: string | null
           duration_minutes?: number | null
@@ -196,6 +198,7 @@ export type Database = {
           youtube_url: string
         }
         Update: {
+          chapters?: Json
           created_at?: string
           creator?: string | null
           duration_minutes?: number | null

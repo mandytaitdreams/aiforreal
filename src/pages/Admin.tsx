@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -10,10 +10,17 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Shield } from "lucide-react";
+import { Plus, Pencil, Trash2, Shield, ExternalLink, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 type Track = { id: string; slug: string; number: string; title: string };
+
+// Maps content type to the tab value used inside TrackDetail
+const TRACK_TAB: Record<ContentType, string> = {
+  videos: "videos", prompts: "prompts", tools: "toolkit",
+  templates: "templates", playlists: "playlists", challenges: "challenges",
+};
 
 type ContentType = "videos" | "prompts" | "tools" | "templates" | "playlists" | "challenges";
 
@@ -110,6 +117,9 @@ export default function Admin() {
 
   const startEdit = (row: any) => { setEditing({ ...row }); setOpen(true); };
 
+  const currentTrack = useMemo(() => tracks.find(t => t.id === trackId), [tracks, trackId]);
+  const trackHref = currentTrack ? `/track/${currentTrack.slug}?tab=${TRACK_TAB[type]}` : "#";
+
   const save = async () => {
     if (!editing) return;
     const payload: any = { track_id: trackId };
@@ -193,6 +203,13 @@ export default function Admin() {
                         <div className="text-xs text-muted-foreground truncate">{r.description || r.body || r.use_case || r.url || ""}</div>
                       </div>
                       <Button size="sm" variant="outline" className="rounded-full" onClick={() => startEdit(r)}><Pencil className="w-3.5 h-3.5"/></Button>
+                      {currentTrack && (
+                        <Button asChild size="sm" variant="outline" className="rounded-full" title="Open in track">
+                          <Link to={`/track/${currentTrack.slug}?tab=${TRACK_TAB[t]}#item-${r.id}`} target="_blank" rel="noreferrer">
+                            <ExternalLink className="w-3.5 h-3.5"/>
+                          </Link>
+                        </Button>
+                      )}
                       <Button size="sm" variant="outline" className="rounded-full text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground" onClick={() => remove(r.id)}><Trash2 className="w-3.5 h-3.5"/></Button>
                     </div>
                   ))}
@@ -203,12 +220,13 @@ export default function Admin() {
         </Tabs>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className={`${type === "tools" ? "max-w-5xl" : "max-w-xl"} max-h-[90vh] overflow-y-auto`}>
             <DialogHeader>
               <DialogTitle className="font-display capitalize">{editing?.id ? "Edit" : "New"} {type.slice(0, -1)}</DialogTitle>
             </DialogHeader>
             {editing && (
-              <div className="space-y-4">
+              <div className={type === "tools" ? "grid md:grid-cols-2 gap-6" : "space-y-4"}>
+                <div className="space-y-4">
                 {fields.map(f => (
                   <div key={f.name} className="space-y-1.5">
                     <Label htmlFor={f.name}>{f.label}</Label>
@@ -224,6 +242,26 @@ export default function Admin() {
                     )}
                   </div>
                 ))}
+                {type === "playlists" && (
+                  <ChaptersEditor
+                    value={Array.isArray(editing.chapters) ? editing.chapters : []}
+                    onChange={(chapters) => setEditing({ ...editing, chapters })}
+                  />
+                )}
+                </div>
+                {type === "tools" && (
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5"/> Live preview (sanitized)</Label>
+                    <div className="rounded-2xl border border-border bg-blush/40 p-5 max-h-[60vh] overflow-y-auto prose prose-sm max-w-none prose-headings:font-display prose-a:text-pink prose-strong:text-foreground">
+                      {editing.html_content ? (
+                        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(String(editing.html_content)) }} />
+                      ) : (
+                        <p className="text-muted-foreground italic m-0">Add HTML on the left to see how it will render in the platform.</p>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Scripts, iframes, inline styles and event handlers are stripped automatically for safety.</p>
+                  </div>
+                )}
               </div>
             )}
             <DialogFooter>
@@ -233,6 +271,63 @@ export default function Admin() {
           </DialogContent>
         </Dialog>
       </main>
+    </div>
+  );
+}
+
+type Chapter = { label: string; t: number };
+
+function ChaptersEditor({ value, onChange }: { value: Chapter[]; onChange: (next: Chapter[]) => void }) {
+  const update = (i: number, patch: Partial<Chapter>) => {
+    const next = value.map((c, idx) => idx === i ? { ...c, ...patch } : c);
+    onChange(next);
+  };
+  const add = () => onChange([...value, { label: "", t: 0 }]);
+  const remove = (i: number) => onChange(value.filter((_, idx) => idx !== i));
+
+  // Accept "1:23" or "1:02:03" or seconds
+  const parseTime = (s: string): number => {
+    const trimmed = s.trim();
+    if (/^\d+$/.test(trimmed)) return Number(trimmed);
+    const parts = trimmed.split(":").map(p => Number(p));
+    if (parts.some(isNaN)) return 0;
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return 0;
+  };
+  const fmt = (sec: number) => {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = Math.floor(sec % 60);
+    return h > 0 ? `${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}` : `${m}:${String(s).padStart(2,"0")}`;
+  };
+
+  return (
+    <div className="space-y-2 pt-2 border-t border-border">
+      <div className="flex items-center justify-between">
+        <Label>Chapter markers (optional)</Label>
+        <Button type="button" size="sm" variant="outline" className="rounded-full" onClick={add}><Plus className="w-3.5 h-3.5 mr-1"/>Add</Button>
+      </div>
+      {value.length === 0 && <p className="text-xs text-muted-foreground">Add timestamps so members can jump to key moments inside the embedded player.</p>}
+      {value.map((c, i) => (
+        <div key={i} className="flex gap-2 items-center">
+          <Input
+            placeholder="Chapter title"
+            value={c.label}
+            onChange={e => update(i, { label: e.target.value })}
+            className="rounded-xl flex-1"
+          />
+          <Input
+            placeholder="0:00"
+            defaultValue={fmt(c.t || 0)}
+            onBlur={e => update(i, { t: parseTime(e.target.value) })}
+            className="rounded-xl w-24 font-mono text-sm"
+          />
+          <Button type="button" size="sm" variant="outline" className="rounded-full text-destructive border-destructive/30" onClick={() => remove(i)}>
+            <Trash2 className="w-3.5 h-3.5"/>
+          </Button>
+        </div>
+      ))}
     </div>
   );
 }
