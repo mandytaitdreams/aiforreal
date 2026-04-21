@@ -1,59 +1,65 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, MessageCircle, Wallet } from "lucide-react";
 
 export const Hero = () => {
   const nav = useNavigate();
   return (
-    <section className="relative overflow-hidden bg-gradient-warm grain">
-      {/* Decorative blobs */}
-      <div className="absolute -top-32 -right-24 w-[480px] h-[480px] bg-gradient-sunrise opacity-40 blur-3xl animate-blob" />
-      <div className="absolute top-40 -left-32 w-[380px] h-[380px] bg-accent/40 blur-3xl animate-blob [animation-delay:-3s]" />
+    <section className="relative overflow-hidden bg-gradient-cream pt-12 pb-20 md:pt-20 md:pb-28">
+      {/* Decorative blobs (Sorbet accents) */}
+      <div className="absolute -top-32 -right-24 w-[480px] h-[480px] rounded-full bg-[#ffd60a]/40 blur-3xl animate-blob" />
+      <div className="absolute top-40 -left-32 w-[420px] h-[420px] rounded-full bg-[#e0c3fc]/60 blur-3xl animate-blob [animation-delay:-3s]" />
+      <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] rounded-full bg-[#fff0f5] blur-3xl" />
 
-      <div className="container relative pt-20 pb-28 md:pt-28 md:pb-36">
-        <div className="max-w-3xl">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card border border-border text-xs font-semibold tracking-wide uppercase text-secondary shadow-soft animate-fade-up">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
+      <div className="container relative">
+        <div className="max-w-4xl mx-auto text-center">
+          <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-[#ffe0eb] text-xs font-bold tracking-wide uppercase text-[#ff0054] shadow-soft animate-fade-up">
+            <Sparkles className="w-3.5 h-3.5" />
             For tired, ambitious women
           </span>
 
-          <h1 className="mt-6 font-display font-black text-5xl md:text-7xl leading-[0.95] text-foreground animate-fade-up [animation-delay:80ms]">
+          <h1 className="mt-7 font-display font-black text-5xl md:text-7xl lg:text-8xl leading-[0.92] text-[#141414] animate-fade-up [animation-delay:80ms]">
             Stop collecting tips.<br />
-            <span className="text-gradient-sunrise italic">Start getting things done.</span>
+            <span className="text-gradient-brand">Start getting</span>
+            <span className="font-handwritten text-[#ff0054] block mt-2 text-6xl md:text-8xl lg:text-9xl font-normal tracking-normal">things done.</span>
           </h1>
 
-          <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed animate-fade-up [animation-delay:160ms]">
+          <p className="mt-8 text-lg md:text-xl text-[#141414]/70 max-w-2xl mx-auto leading-relaxed animate-fade-up [animation-delay:160ms]">
             You don't need another YouTube video explaining what a large language model is.
-            You need AI that helps with <span className="text-foreground font-semibold">your actual week</span> —
+            You need AI that helps with <span className="text-[#141414] font-semibold">your actual week</span> —
             your inbox, your clients, your household, your business.
           </p>
 
-          <div className="mt-10 flex flex-col sm:flex-row gap-3 animate-fade-up [animation-delay:240ms]">
+          <p className="mt-5 text-base md:text-lg text-[#141414]/80 max-w-xl mx-auto animate-fade-up [animation-delay:200ms]">
+            AI For Real Life is a membership built for women who are already good at everything — and exhausted from doing it alone.
+          </p>
+
+          <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center animate-fade-up [animation-delay:240ms]">
             <Button
               size="lg"
               onClick={() => nav("/auth?mode=signup")}
-              className="bg-gradient-sunrise text-primary-foreground border-0 shadow-warm hover:opacity-95 hover:shadow-glow transition-all text-base h-14 px-8 rounded-full font-semibold"
+              className="bg-[#ff0054] text-white border-2 border-transparent shadow-pink hover:bg-white hover:text-[#ff0054] hover:border-[#ff0054] hover:-translate-y-0.5 transition-all text-base h-14 px-8 rounded-full font-bold"
             >
-              Get your first AI win in under 15 minutes →
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => document.getElementById("tracks")?.scrollIntoView({ behavior: "smooth" })}
-              className="h-14 px-7 rounded-full border-2 border-secondary/20 text-secondary hover:bg-secondary hover:text-secondary-foreground"
-            >
-              See the 9 tracks
+              Get your first AI win in under 15 minutes <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </div>
 
-          <p className="mt-4 text-sm text-muted-foreground animate-fade-up [animation-delay:320ms]">
+          <p className="mt-4 text-sm text-[#141414]/60 animate-fade-up [animation-delay:320ms]">
             No credit card needed. No AI jargon. Just one real thing, done.
           </p>
 
-          <div className="mt-12 flex flex-wrap gap-6 text-sm text-muted-foreground animate-fade-up [animation-delay:400ms]">
-            <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-primary" /> 9 tracks for real life</div>
-            <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-accent" /> Named AI agents, no jargon</div>
-            <div className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-secondary" /> Start at $9 · cancel anytime</div>
+          {/* Hero proof bar */}
+          <div className="mt-14 grid sm:grid-cols-3 gap-3 max-w-3xl mx-auto animate-fade-up [animation-delay:400ms]">
+            {[
+              { icon: <Sparkles className="w-5 h-5" />, text: "10 tracks covering real life: home, career, business, content, and more" },
+              { icon: <MessageCircle className="w-5 h-5" />, text: "Named AI agents — no models, no jargon, just help" },
+              { icon: <Wallet className="w-5 h-5" />, text: "Start at $9/month — cancel any time" },
+            ].map((p, i) => (
+              <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-white/70 border border-[#ffe0eb] text-left text-sm text-[#141414]/80">
+                <span className="text-[#ff0054] mt-0.5 shrink-0">{p.icon}</span>
+                <span>{p.text}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

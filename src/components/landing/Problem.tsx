@@ -1,32 +1,39 @@
-const symptoms = [
-  "You've bookmarked 47 ChatGPT tutorials. Watched maybe 3.",
-  "Every productivity app feels like another job to keep up with.",
-  '"AI for business" courses sound like they\'re for someone else.',
-  "You're already running 3 mental tabs. You don't need a 4th.",
+const questions = [
+  "Am I cheating if I use this?",
+  "How do I use AI without losing my voice?",
+  "Is this safe for my client's data?",
+  "Will this replace me?",
+  "I tried it once and felt stupid. Where do I even start?",
 ];
 
 export const Problem = () => (
-  <section className="bg-secondary text-secondary-foreground py-24 md:py-32 relative overflow-hidden">
-    <div className="absolute inset-0 grain opacity-30" />
-    <div className="container relative">
-      <div className="max-w-3xl">
-        <span className="text-xs uppercase tracking-[0.2em] font-bold text-accent">The problem</span>
-        <h2 className="mt-4 font-display font-black text-4xl md:text-6xl leading-tight">
-          You're not behind on AI.<br />
-          <span className="italic text-accent">AI is behind on you.</span>
-        </h2>
-        <p className="mt-6 text-lg md:text-xl text-secondary-foreground/80 leading-relaxed">
-          Most AI content is written by men, for men, about jobs that don't look like yours.
-          You don't need to "10x your output." You need to get through Tuesday with your nervous system intact.
-        </p>
+  <section className="bg-[#2a1b3d] text-white py-24 md:py-32 relative overflow-hidden">
+    <div className="absolute -top-20 -left-20 w-[500px] h-[500px] rounded-full bg-[#ff0054]/20 blur-3xl" />
+    <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-[#ffd60a]/10 blur-3xl" />
+    <div className="container relative max-w-3xl">
+      <p className="font-display font-black text-3xl md:text-5xl leading-tight text-white">
+        Most AI training was designed by tech bros, for tech bros.
+      </p>
+      <p className="mt-6 text-lg md:text-xl text-white/80">
+        It doesn't answer what women actually ask:
+      </p>
 
-        <div className="mt-12 grid sm:grid-cols-2 gap-4">
-          {symptoms.map((s, i) => (
-            <div key={i} className="p-6 rounded-3xl bg-secondary-foreground/5 border border-secondary-foreground/10 backdrop-blur-sm">
-              <p className="text-secondary-foreground/90 leading-relaxed">"{s}"</p>
-            </div>
-          ))}
-        </div>
+      <ul className="mt-8 space-y-4">
+        {questions.map((q, i) => (
+          <li key={i} className="font-handwritten text-2xl md:text-3xl text-[#ffd60a] leading-snug">
+            "{q}"
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-14 p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm">
+        <p className="font-display font-black text-2xl md:text-4xl text-white leading-tight">
+          68% of women have tried AI tools.<br />
+          <span className="text-[#ff0054]">Only 6% feel confident using them.</span>
+        </p>
+        <p className="mt-5 text-white/80 text-lg leading-relaxed">
+          That gap isn't intelligence. It's time, safety, and training that was never designed for the way women actually live and work.
+        </p>
       </div>
     </div>
   </section>

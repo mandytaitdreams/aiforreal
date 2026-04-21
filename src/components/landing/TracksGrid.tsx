@@ -1,43 +1,40 @@
-import { TRACKS } from "@/data/tracks";
+import { TRACKS, hueBg } from "@/data/tracks";
 import { useNavigate } from "react-router-dom";
 
 export const TracksGrid = () => {
   const nav = useNavigate();
   return (
-    <section id="tracks" className="py-24 md:py-32 bg-background">
+    <section id="tracks" className="py-24 md:py-32 bg-[#fffdf7]">
       <div className="container">
-        <div className="max-w-2xl mb-16">
-          <span className="text-xs uppercase tracking-[0.2em] font-bold text-primary">9 tracks · 1 membership</span>
-          <h2 className="mt-4 font-display font-black text-4xl md:text-6xl leading-[1.05] text-foreground">
-            Named agents.<br />
-            <span className="italic text-gradient-sunrise">Real jobs done.</span>
+        <div className="max-w-3xl mx-auto text-center mb-14">
+          <h2 className="font-display font-black text-4xl md:text-6xl leading-tight text-[#141414]">
+            Everything you need.<br />
+            <span className="font-handwritten text-[#ff0054] font-normal">Nothing you don't.</span>
           </h2>
-          <p className="mt-6 text-lg text-muted-foreground">
-            Each track has a named AI agent — Iris, Hazel, Nora, Vera. They're not models.
-            They're the help you'd call if you had a smarter, calmer best friend in every part of your life.
+          <p className="mt-6 text-lg text-[#141414]/75">
+            The platform gives every member access to all 10 tracks on day one. You start where the pain is loudest. You grow from there.
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {TRACKS.map((t, i) => (
+          {TRACKS.map((t) => (
             <button
               key={t.slug}
               onClick={() => nav("/auth?mode=signup")}
-              className="group text-left p-7 rounded-3xl bg-card border border-border shadow-card hover:shadow-warm hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
-              style={{ animationDelay: `${i * 60}ms` }}
+              className={`interactive-card group text-left p-7 rounded-[2rem] ${hueBg(t.hue)} text-[#141414] relative overflow-hidden cursor-pointer`}
             >
-              <div className={`absolute top-0 left-0 right-0 h-1.5 ${t.hue}`} />
               <div className="flex items-center justify-between mb-4">
-                <span className="text-3xl">{t.emoji}</span>
-                <span className="font-display font-bold text-2xl text-muted-foreground/40">{t.number}</span>
+                <span className="hover-icon-wrap inline-flex w-12 h-12 rounded-full bg-white items-center justify-center font-display font-black text-[#ff0054] text-base">
+                  {t.number}
+                </span>
+                <span className="text-xs uppercase tracking-wider font-bold text-[#141414]/50 hover-invert">{t.tier === "try" ? "Try" : t.tier === "growth" ? "Growth" : "Power"}</span>
               </div>
-              <h3 className="font-display font-bold text-xl leading-tight text-foreground mb-2">
-                {t.title}
-              </h3>
-              <p className="text-sm text-muted-foreground italic mb-4">{t.tagline}</p>
-              <div className="pt-4 border-t border-border/60 flex items-center justify-between text-sm">
-                <span className="text-foreground font-semibold">Meet {t.agentName}</span>
-                <span className="text-primary group-hover:translate-x-1 transition-transform">→</span>
+              <h3 className="font-display font-bold text-xl leading-tight">{t.title}</h3>
+              <p className="mt-2 font-handwritten text-xl text-[#ff0054] hover-invert leading-tight">{t.tagline}</p>
+              <p className="mt-3 text-sm text-[#141414]/80 hover-invert leading-relaxed">{t.description}</p>
+              <div className="mt-5 pt-4 border-t border-[#141414]/10 text-sm font-bold flex items-center justify-between hover-invert">
+                <span>Meet {t.agentName}</span>
+                <span>→</span>
               </div>
             </button>
           ))}
