@@ -20,7 +20,7 @@ export const TracksGrid = () => {
           {TRACKS.map((t) => (
             <button
               key={t.slug}
-              onClick={() => nav("/auth?mode=signup")}
+              onClick={() => nav("/onboarding")}
               className={`interactive-card group text-left p-7 rounded-[2rem] ${hueBg(t.hue)} text-[#141414] relative overflow-hidden cursor-pointer`}
             >
               <div className="flex items-center justify-between mb-4">

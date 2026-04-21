@@ -176,7 +176,7 @@ export const ProblemSolutionTabs = () => {
                     </p>
                   )}
                   <Button
-                    onClick={() => nav("/auth?mode=signup")}
+                    onClick={() => nav("/onboarding")}
                     className="mt-7 rounded-full bg-[#ff0054] text-white border-2 border-transparent hover:bg-white hover:text-[#ff0054] hover:border-[#ff0054] font-bold"
                   >
                     Get my first AI win <ArrowRight className="ml-2 w-4 h-4" />
