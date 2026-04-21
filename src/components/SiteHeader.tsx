@@ -16,6 +16,7 @@ export const SiteHeader = () => {
           <Link to="/" className="hover:text-[#ff0054] transition-colors">Home</Link>
           <Link to="/pricing" className="hover:text-[#ff0054] transition-colors">Pricing</Link>
           {user && <Link to="/dashboard" className="hover:text-[#ff0054] transition-colors">Dashboard</Link>}
+          {user && <Link to="/library" className="hover:text-[#ff0054] transition-colors">Library</Link>}
         </nav>
         <div className="flex items-center gap-2">
           {user ? (
