@@ -476,6 +476,13 @@ function VideoCard({ v, saved, onSave, mode, onModeChange, onTryInChat }: {
         <Button size="sm" onClick={onTryInChat} className="rounded-full bg-pink text-white hover:bg-pink/90">
           <Sparkles className="w-3.5 h-3.5 mr-1.5"/> Try in chat
         </Button>
+        {v.presentation_url && (
+          <Button asChild size="sm" variant="outline" className="rounded-full ml-2">
+            <a href={v.presentation_url} target="_blank" rel="noreferrer">
+              <ExternalLink className="w-3.5 h-3.5 mr-1.5"/> View presentation
+            </a>
+          </Button>
+        )}
       </div>
     </div>
   );
