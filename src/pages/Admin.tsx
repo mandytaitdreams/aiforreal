@@ -117,6 +117,9 @@ export default function Admin() {
 
   const startEdit = (row: any) => { setEditing({ ...row }); setOpen(true); };
 
+  const currentTrack = useMemo(() => tracks.find(t => t.id === trackId), [tracks, trackId]);
+  const trackHref = currentTrack ? `/track/${currentTrack.slug}?tab=${TRACK_TAB[type]}` : "#";
+
   const save = async () => {
     if (!editing) return;
     const payload: any = { track_id: trackId };
