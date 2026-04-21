@@ -203,6 +203,13 @@ export default function Admin() {
                         <div className="text-xs text-muted-foreground truncate">{r.description || r.body || r.use_case || r.url || ""}</div>
                       </div>
                       <Button size="sm" variant="outline" className="rounded-full" onClick={() => startEdit(r)}><Pencil className="w-3.5 h-3.5"/></Button>
+                      {currentTrack && (
+                        <Button asChild size="sm" variant="outline" className="rounded-full" title="Open in track">
+                          <Link to={`/track/${currentTrack.slug}?tab=${TRACK_TAB[t]}#item-${r.id}`} target="_blank" rel="noreferrer">
+                            <ExternalLink className="w-3.5 h-3.5"/>
+                          </Link>
+                        </Button>
+                      )}
                       <Button size="sm" variant="outline" className="rounded-full text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground" onClick={() => remove(r.id)}><Trash2 className="w-3.5 h-3.5"/></Button>
                     </div>
                   ))}
