@@ -8,103 +8,66 @@
 
 @layer base {
   :root {
-    /* Brand palette */
-    --cream: 36 60% 96%;
-    --cream-warm: 32 55% 92%;
-    --plum: 285 45% 18%;
-    --plum-deep: 285 50% 12%;
-    --coral: 8 88% 64%;
-    --coral-deep: 6 78% 54%;
-    --saffron: 38 95% 60%;
-    --rose: 348 80% 72%;
-    --sage: 152 28% 58%;
-    --ink: 285 30% 14%;
+    /* Dopamine Daydream — exact brand palette in HSL.
+       Pink #ff0054, Cream #fffdf7, Charcoal #141414, Yellow #ffd60a, Lavender #e0c3fc, Plum #2a1b3d, Blush #fff0f5 */
+    --pink: 340 100% 50%;
+    --pink-light: 340 100% 60%;
+    --pink-soft: 340 100% 94%;
+    --cream: 45 100% 98%;
+    --blush: 340 100% 97%;
+    --charcoal: 0 0% 8%;
+    --yellow: 49 100% 52%;
+    --lavender: 263 81% 88%;
+    --plum: 264 38% 18%;
+    --pink-border: 340 100% 94%;
 
-    /* Semantic tokens */
     --background: var(--cream);
-    --foreground: var(--ink);
+    --foreground: var(--charcoal);
 
     --card: 0 0% 100%;
-    --card-foreground: var(--ink);
+    --card-foreground: var(--charcoal);
 
     --popover: 0 0% 100%;
-    --popover-foreground: var(--ink);
+    --popover-foreground: var(--charcoal);
 
-    --primary: var(--coral);
-    --primary-foreground: 36 60% 98%;
+    --primary: var(--pink);
+    --primary-foreground: 0 0% 100%;
 
     --secondary: var(--plum);
-    --secondary-foreground: 36 60% 98%;
+    --secondary-foreground: var(--cream);
 
-    --muted: 32 40% 90%;
-    --muted-foreground: 285 15% 38%;
+    --muted: var(--blush);
+    --muted-foreground: 0 0% 35%;
 
-    --accent: var(--saffron);
-    --accent-foreground: var(--plum-deep);
+    --accent: var(--yellow);
+    --accent-foreground: var(--charcoal);
 
-    --destructive: 0 78% 54%;
+    --destructive: 0 84% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 32 35% 84%;
-    --input: 32 35% 88%;
-    --ring: var(--coral);
+    --border: var(--pink-border);
+    --input: var(--pink-border);
+    --ring: var(--pink);
 
-    --radius: 1.25rem;
+    --radius: 2rem;
 
-    /* Gradients */
-    --gradient-sunrise: linear-gradient(135deg, hsl(var(--saffron)) 0%, hsl(var(--coral)) 50%, hsl(var(--rose)) 100%);
-    --gradient-warm: linear-gradient(180deg, hsl(var(--cream)) 0%, hsl(var(--cream-warm)) 100%);
-    --gradient-plum: linear-gradient(135deg, hsl(var(--plum)) 0%, hsl(var(--plum-deep)) 100%);
-    --gradient-coral-saffron: linear-gradient(90deg, hsl(var(--coral)) 0%, hsl(var(--saffron)) 100%);
+    --gradient-brand: linear-gradient(135deg, hsl(var(--pink)) 0%, hsl(var(--pink-light)) 100%);
+    --gradient-cream: linear-gradient(180deg, hsl(var(--cream)) 0%, hsl(var(--blush)) 100%);
+    --gradient-plum: linear-gradient(135deg, hsl(var(--plum)) 0%, 264 45% 12% 100%);
 
-    /* Shadows */
-    --shadow-soft: 0 4px 24px -8px hsl(var(--plum) / 0.12);
-    --shadow-warm: 0 12px 40px -12px hsl(var(--coral) / 0.35);
-    --shadow-glow: 0 0 60px -10px hsl(var(--saffron) / 0.5);
-    --shadow-card: 0 2px 0 0 hsl(var(--plum) / 0.08), 0 8px 24px -12px hsl(var(--plum) / 0.15);
-
-    /* Motion */
-    --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
-    --transition-base: 240ms var(--ease-out-soft);
+    --shadow-soft: 0 10px 40px -10px hsl(var(--pink) / 0.15);
+    --shadow-pink: 0 8px 25px -5px hsl(var(--pink) / 0.4);
+    --shadow-pink-lg: 0 20px 50px -12px hsl(var(--pink) / 0.45);
+    --shadow-yellow: 0 8px 25px -5px hsl(var(--yellow) / 0.45);
 
     --sidebar-background: var(--cream);
-    --sidebar-foreground: var(--ink);
-    --sidebar-primary: var(--coral);
-    --sidebar-primary-foreground: 36 60% 98%;
-    --sidebar-accent: 32 40% 90%;
-    --sidebar-accent-foreground: var(--ink);
-    --sidebar-border: 32 35% 84%;
-    --sidebar-ring: var(--coral);
-  }
-
-  .dark {
-    --background: 285 35% 8%;
-    --foreground: 36 50% 95%;
-    --card: 285 30% 12%;
-    --card-foreground: 36 50% 95%;
-    --popover: 285 30% 12%;
-    --popover-foreground: 36 50% 95%;
-    --primary: 8 88% 68%;
-    --primary-foreground: 285 50% 10%;
-    --secondary: 285 25% 18%;
-    --secondary-foreground: 36 50% 95%;
-    --muted: 285 20% 16%;
-    --muted-foreground: 32 20% 70%;
-    --accent: 38 95% 65%;
-    --accent-foreground: 285 50% 10%;
-    --destructive: 0 78% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 285 20% 22%;
-    --input: 285 20% 22%;
-    --ring: 8 88% 68%;
-    --sidebar-background: 285 35% 8%;
-    --sidebar-foreground: 36 50% 95%;
-    --sidebar-primary: 8 88% 68%;
-    --sidebar-primary-foreground: 285 50% 10%;
-    --sidebar-accent: 285 25% 18%;
-    --sidebar-accent-foreground: 36 50% 95%;
-    --sidebar-border: 285 20% 22%;
-    --sidebar-ring: 8 88% 68%;
+    --sidebar-foreground: var(--charcoal);
+    --sidebar-primary: var(--pink);
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: var(--blush);
+    --sidebar-accent-foreground: var(--charcoal);
+    --sidebar-border: var(--pink-border);
+    --sidebar-ring: var(--pink);
   }
 }
 
@@ -115,40 +78,63 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-feature-settings: 'ss01', 'cv11';
+    font-family: 'Poppins', system-ui, sans-serif;
   }
 
   h1, h2, h3, h4, .font-display {
-    font-family: 'Fraunces', Georgia, serif;
-    font-optical-sizing: auto;
-    letter-spacing: -0.02em;
+    font-family: 'Poppins', system-ui, sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+  }
+
+  .font-handwritten {
+    font-family: 'Gochi Hand', cursive;
+    letter-spacing: 0;
   }
 }
 
 @layer utilities {
-  .bg-gradient-sunrise { background-image: var(--gradient-sunrise); }
-  .bg-gradient-warm { background-image: var(--gradient-warm); }
-  .bg-gradient-plum { background-image: var(--gradient-plum); }
-  .bg-gradient-coral-saffron { background-image: var(--gradient-coral-saffron); }
-  .text-gradient-sunrise {
-    background-image: var(--gradient-sunrise);
+  .bg-gradient-brand { background-image: var(--gradient-brand); }
+  .bg-gradient-cream { background-image: var(--gradient-cream); }
+  .bg-gradient-plum { background: linear-gradient(135deg, hsl(var(--plum)), hsl(264 45% 12%)); }
+  .bg-blush { background-color: hsl(var(--blush)); }
+  .bg-yellow { background-color: hsl(var(--yellow)); }
+  .bg-lavender { background-color: hsl(var(--lavender)); }
+  .bg-pink { background-color: hsl(var(--pink)); }
+  .text-gradient-brand {
+    background-image: var(--gradient-brand);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
   .shadow-soft { box-shadow: var(--shadow-soft); }
-  .shadow-warm { box-shadow: var(--shadow-warm); }
-  .shadow-glow { box-shadow: var(--shadow-glow); }
-  .shadow-card { box-shadow: var(--shadow-card); }
-  .grain {
-    position: relative;
+  .shadow-pink { box-shadow: var(--shadow-pink); }
+  .shadow-pink-lg { box-shadow: var(--shadow-pink-lg); }
+  .shadow-yellow { box-shadow: var(--shadow-yellow); }
+
+  .glass-effect {
+    background: hsl(0 0% 100% / 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--pink-border));
   }
-  .grain::after {
-    content: '';
-    position: absolute; inset: 0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
-    opacity: 0.06; pointer-events: none; mix-blend-mode: multiply;
+
+  /* Pink Hover Protocol — applied to .interactive-card containers */
+  .interactive-card {
+    transition: all 0.3s ease;
+  }
+  .interactive-card:hover {
+    background-color: hsl(var(--pink)) !important;
+    color: #ffffff !important;
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px -10px hsl(var(--pink) / 0.4);
+  }
+  .interactive-card:hover .hover-invert {
+    color: #ffffff !important;
+  }
+  .interactive-card:hover .hover-icon-wrap {
+    background: #ffffff !important;
+    color: hsl(var(--pink)) !important;
   }
 }
 

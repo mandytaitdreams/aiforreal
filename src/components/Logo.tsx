@@ -1,14 +1,10 @@
 import { Link } from "react-router-dom";
 
-export const Logo = ({ className = "" }: { className?: string }) => (
-  <Link to="/" className={`inline-flex items-center gap-2 font-display font-black text-xl tracking-tight ${className}`}>
-    <span className="relative inline-block w-8 h-8">
-      <span className="absolute inset-0 bg-gradient-sunrise rounded-full animate-blob" />
-      <span className="absolute inset-1.5 bg-background rounded-full" />
-      <span className="absolute inset-3 bg-gradient-coral-saffron rounded-full" />
+export const Logo = ({ className = "", invert = false }: { className?: string; invert?: boolean }) => (
+  <Link to="/" className={`inline-flex items-center gap-2.5 font-display font-black text-xl tracking-tight ${invert ? "text-white" : "text-foreground"} ${className}`}>
+    <span className="relative inline-flex w-9 h-9 items-center justify-center rounded-full bg-gradient-brand shadow-pink">
+      <span className="font-handwritten text-white text-xl leading-none">a</span>
     </span>
-    <span>
-      AI <span className="text-gradient-sunrise">For Real Life</span>
-    </span>
+    <span>AI <span className="text-gradient-brand">For Real Life</span></span>
   </Link>
 );
