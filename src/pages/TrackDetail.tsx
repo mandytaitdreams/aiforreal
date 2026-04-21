@@ -195,7 +195,7 @@ export default function TrackDetail() {
               {videos.length === 0 ? <Empty label="Videos coming soon" /> : (
                 <div className="grid md:grid-cols-2 gap-5">
                   {videos.map(v => (
-                    <div key={v.id} className="p-6 rounded-3xl bg-card border border-border shadow-soft">
+                    <div key={v.id} id={`item-${v.id}`} className="p-6 rounded-3xl bg-card border border-border shadow-soft scroll-mt-24">
                       <div className="aspect-video rounded-2xl bg-blush flex items-center justify-center mb-4">
                         {v.youtube_id ? (
                           <iframe className="w-full h-full rounded-2xl" src={`https://www.youtube.com/embed/${v.youtube_id}`} allowFullScreen />
