@@ -93,6 +93,10 @@ export default function TrackDetail() {
   useEffect(() => {
     const t = searchParams.get("tab");
     if (t) setTab(t);
+    const s = searchParams.get("seed");
+    if (s) {
+      try { setSeedPrompt(decodeURIComponent(escape(atob(s)))); setTab("agent"); } catch { /* ignore */ }
+    }
   }, [searchParams]);
 
   useEffect(() => {
