@@ -46,6 +46,7 @@ const youtubeEmbedUrl = (url: string): string | null => {
 
 export default function TrackDetail() {
   const { slug } = useParams();
+  const [searchParams] = useSearchParams();
   const { user, loading } = useAuth();
   const nav = useNavigate();
 
@@ -59,7 +60,8 @@ export default function TrackDetail() {
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [seedPrompt, setSeedPrompt] = useState<string | undefined>();
-  const [tab, setTab] = useState("videos");
+  const [tab, setTab] = useState(() => searchParams.get("tab") || "videos");
+  const playerRefs = useRef<Record<string, HTMLIFrameElement | null>>({});
 
   useEffect(() => { if (!loading && !user) nav("/auth", { replace: true }); }, [loading, user, nav]);
 
