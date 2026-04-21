@@ -96,6 +96,14 @@ export default function Dashboard() {
               </div>
               <ArrowRight className="w-4 h-4 text-muted-foreground"/>
             </Link>
+            <Link to="/chat" className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border shadow-soft hover:shadow-pink transition-all">
+              <div className="w-10 h-10 rounded-full bg-blush flex items-center justify-center"><MessageCircle className="w-4 h-4 text-pink"/></div>
+              <div className="flex-1">
+                <div className="font-bold">AI Chat Hub</div>
+                <div className="text-xs text-muted-foreground">Talk to any of your 16 agents</div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-muted-foreground"/>
+            </Link>
             {recentConv && (
               <Link to={recentConv.track_slug ? `/track/${recentConv.track_slug}` : "/dashboard"} className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border shadow-soft hover:shadow-pink transition-all">
                 <div className="w-10 h-10 rounded-full bg-blush flex items-center justify-center"><MessageCircle className="w-4 h-4 text-pink"/></div>
