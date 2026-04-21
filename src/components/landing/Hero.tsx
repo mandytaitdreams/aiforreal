@@ -1,11 +1,40 @@
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { ArrowRight, Sparkles, MessageCircle, Wallet } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, Sparkles, MessageCircle, Wallet, LogIn } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Hero = () => {
   const nav = useNavigate();
+  const { user } = useAuth();
   return (
     <section className="relative overflow-hidden bg-gradient-cream pt-12 pb-20 md:pt-20 md:pb-28">
+      {/* Top-right auth shortcut */}
+      <div className="absolute top-4 right-4 z-20">
+        {user ? (
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="rounded-full border-[#ff0054]/30 text-[#ff0054] hover:bg-[#ff0054] hover:text-white bg-white/80 backdrop-blur"
+          >
+            <Link to="/dashboard">
+              <LogIn className="w-4 h-4 mr-1.5" /> Dashboard
+            </Link>
+          </Button>
+        ) : (
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="rounded-full border-[#ff0054]/30 text-[#ff0054] hover:bg-[#ff0054] hover:text-white bg-white/80 backdrop-blur"
+          >
+            <Link to="/auth" aria-label="Log in">
+              <LogIn className="w-4 h-4 mr-1.5" /> Log in
+            </Link>
+          </Button>
+        )}
+      </div>
+
       {/* Decorative blobs (Sorbet accents) */}
       <div className="absolute -top-32 -right-24 w-[480px] h-[480px] rounded-full bg-[#ffd60a]/40 blur-3xl animate-blob" />
       <div className="absolute top-40 -left-32 w-[420px] h-[420px] rounded-full bg-[#e0c3fc]/60 blur-3xl animate-blob [animation-delay:-3s]" />
