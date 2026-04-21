@@ -390,3 +390,51 @@ const Empty = ({ label }: { label: string }) => (
     <p className="text-sm mt-2">Content uploads via the admin portal.</p>
   </div>
 );
+
+function VideoCard({ v, saved, onSave, mode, onModeChange, onTryInChat }: {
+  v: Video; saved: boolean; onSave: () => void;
+  mode: "watch" | "listen"; onModeChange: (m: "watch" | "listen") => void;
+  onTryInChat: () => void;
+}) {
+  const audioSrc = v.audio_url
+    || (v.audio_path ? supabase.storage.from("audio").getPublicUrl(v.audio_path).data.publicUrl : "");
+  const hasAudio = !!audioSrc;
+
+  return (
+    <div id={`item-${v.id}`} className="p-6 rounded-3xl bg-card border border-border shadow-soft scroll-mt-24">
+      <div className="aspect-video rounded-2xl bg-blush flex items-center justify-center mb-4 overflow-hidden">
+        {mode === "listen" && hasAudio ? (
+          <div className="w-full h-full flex items-center justify-center p-4">
+            <div className="w-full"><AudioPlayer src={audioSrc} title={v.title} /></div>
+          </div>
+        ) : v.youtube_id ? (
+          <iframe className="w-full h-full rounded-2xl" src={`https://www.youtube.com/embed/${v.youtube_id}`} allowFullScreen />
+        ) : hasAudio ? (
+          <div className="w-full h-full flex items-center justify-center p-4">
+            <div className="w-full"><AudioPlayer src={audioSrc} title={v.title} /></div>
+          </div>
+        ) : (
+          <PlayCircle className="w-12 h-12 text-pink/40" />
+        )}
+      </div>
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="font-display font-bold text-lg">{v.title}</h3>
+        <div className="flex items-center gap-1 shrink-0">
+          <ListenToggle mode={mode} onChange={onModeChange} hasAudio={hasAudio && !!v.youtube_id} />
+          <SaveBtn saved={saved} onClick={onSave} />
+        </div>
+      </div>
+      {v.description && <p className="text-sm text-muted-foreground mt-2">{v.description}</p>}
+      <div className="flex flex-wrap items-center gap-1.5 mt-3">
+        <Badge variant="secondary" className="rounded-full">{v.duration_minutes} min</Badge>
+        {hasAudio && !v.youtube_id && <Badge variant="outline" className="rounded-full"><Headphones className="w-3 h-3 mr-1"/>Audio</Badge>}
+        {v.questions_answered?.slice(0, 2).map((q, i) => <Badge key={i} variant="outline" className="rounded-full">{q}</Badge>)}
+      </div>
+      <div className="mt-4">
+        <Button size="sm" onClick={onTryInChat} className="rounded-full bg-pink text-white hover:bg-pink/90">
+          <Sparkles className="w-3.5 h-3.5 mr-1.5"/> Try in chat
+        </Button>
+      </div>
+    </div>
+  );
+}
