@@ -37,6 +37,7 @@ const TYPE_FIELDS: Record<ContentType, { name: string; label: string; type?: "te
     { name: "description", label: "Description", type: "textarea" },
     { name: "use_case", label: "Use case" },
     { name: "url", label: "URL", type: "url" },
+    { name: "html_content", label: "HTML content (renders inside the platform)", type: "textarea" },
     { name: "sort_order", label: "Sort order", type: "number" },
   ],
   templates: [

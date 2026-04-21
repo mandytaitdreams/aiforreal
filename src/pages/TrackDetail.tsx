@@ -14,13 +14,33 @@ type Track = { id: string; slug: string; number: string; title: string; tagline:
 type Agent = { id: string; name: string; role: string; tagline: string; system_prompt: string; model: string };
 type Prompt = { id: string; title: string; body: string; use_case: string; difficulty: string };
 type Video = { id: string; title: string; description: string | null; duration_minutes: number; youtube_id: string | null; questions_answered: string[] };
-type Tool = { id: string; name: string; description: string; use_case: string | null; url: string | null };
+type Tool = { id: string; name: string; description: string; use_case: string | null; url: string | null; html_content: string | null };
 type Template = { id: string; title: string; body: string; use_case: string; problem_solved: string | null };
 type Playlist = { id: string; title: string; youtube_url: string; creator: string | null; duration_minutes: number | null };
 type Challenge = { id: string; title: string; description: string; success_metric: string | null; kind: string };
 
 const hueClass = (h: string) => h === "pink" ? "bg-pink" : h === "yellow" ? "bg-yellow" : h === "lavender" ? "bg-lavender" : "bg-blush";
 const tierLabel = (t: string) => t === "try" ? "Try It" : t === "growth" ? "Growth" : t === "power" ? "Power" : "Free";
+
+const youtubeEmbedUrl = (url: string): string | null => {
+  try {
+    const u = new URL(url);
+    // playlist
+    const list = u.searchParams.get("list");
+    if (list) return `https://www.youtube.com/embed/videoseries?list=${list}`;
+    // watch?v=
+    const v = u.searchParams.get("v");
+    if (v) return `https://www.youtube.com/embed/${v}`;
+    // youtu.be/<id>
+    if (u.hostname.includes("youtu.be")) {
+      const id = u.pathname.replace(/^\//, "").split("/")[0];
+      if (id) return `https://www.youtube.com/embed/${id}`;
+    }
+    // /embed/<id> already
+    if (u.pathname.startsWith("/embed/")) return url;
+    return null;
+  } catch { return null; }
+};
 
 export default function TrackDetail() {
   const { slug } = useParams();
@@ -183,19 +203,29 @@ export default function TrackDetail() {
 
             <TabsContent value="toolkit" className="mt-8">
               {tools.length === 0 ? <Empty label="Toolkit coming soon" /> : (
-                <div className="grid md:grid-cols-3 gap-5">
+                <div className="space-y-6">
                   {tools.map(t => (
                     <div key={t.id} className="p-6 rounded-3xl bg-card border border-border shadow-soft">
-                      <div className="flex items-start justify-between">
-                        <h3 className="font-display font-bold text-lg">{t.name}</h3>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <h3 className="font-display font-bold text-lg">{t.name}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">{t.description}</p>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {t.use_case && <Badge variant="secondary" className="rounded-full">{t.use_case}</Badge>}
+                            {t.url && (
+                              <a href={t.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-pink hover:underline">
+                                Open source <ExternalLink className="w-3 h-3"/>
+                              </a>
+                            )}
+                          </div>
+                        </div>
                         <SaveBtn saved={savedIds.has(t.id)} onClick={() => toggleSave(t.id, "tool")} />
                       </div>
-                      <p className="text-sm text-muted-foreground mt-2">{t.description}</p>
-                      {t.use_case && <Badge variant="secondary" className="rounded-full mt-3">{t.use_case}</Badge>}
-                      {t.url && (
-                        <a href={t.url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-pink hover:underline">
-                          Open <ExternalLink className="w-3.5 h-3.5"/>
-                        </a>
+                      {t.html_content && (
+                        <div
+                          className="mt-5 p-5 rounded-2xl bg-blush/50 border border-border prose prose-sm max-w-none prose-headings:font-display prose-headings:text-foreground prose-a:text-pink prose-strong:text-foreground"
+                          dangerouslySetInnerHTML={{ __html: t.html_content }}
+                        />
                       )}
                     </div>
                   ))}
@@ -226,17 +256,30 @@ export default function TrackDetail() {
 
             <TabsContent value="playlists" className="mt-8">
               {playlists.length === 0 ? <Empty label="Playlist coming soon" /> : (
-                <div className="space-y-3">
-                  {playlists.map(p => (
-                    <a key={p.id} href={p.youtube_url} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border shadow-soft hover:shadow-pink transition-all">
-                      <div className="w-12 h-12 rounded-full bg-blush flex items-center justify-center"><Youtube className="w-5 h-5 text-pink"/></div>
-                      <div className="flex-1">
-                        <div className="font-bold">{p.title}</div>
-                        <div className="text-xs text-muted-foreground">{p.creator} · {p.duration_minutes} min</div>
+                <div className="grid md:grid-cols-2 gap-5">
+                  {playlists.map(p => {
+                    const embed = youtubeEmbedUrl(p.youtube_url);
+                    return (
+                      <div key={p.id} className="p-5 rounded-3xl bg-card border border-border shadow-soft">
+                        <div className="aspect-video rounded-2xl overflow-hidden bg-blush flex items-center justify-center mb-4">
+                          {embed ? (
+                            <iframe className="w-full h-full" src={embed} title={p.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+                          ) : (
+                            <Youtube className="w-10 h-10 text-pink/40" />
+                          )}
+                        </div>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <div className="font-display font-bold">{p.title}</div>
+                            <div className="text-xs text-muted-foreground mt-0.5">{p.creator}{p.duration_minutes ? ` · ${p.duration_minutes} min` : ""}</div>
+                          </div>
+                          <a href={p.youtube_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-bold text-pink hover:underline shrink-0">
+                            YouTube <ExternalLink className="w-3 h-3"/>
+                          </a>
+                        </div>
                       </div>
-                      <ExternalLink className="w-4 h-4 text-muted-foreground"/>
-                    </a>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </TabsContent>
