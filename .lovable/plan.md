@@ -1,75 +1,70 @@
 
 
-## Reframe Onboarding: Problem-First, Track Suggested
+## What's Still Missing from the PRD
 
-Instead of making her pick a track from a grid, we ask about her *life*, then suggest the right track based on her answers. This matches the V2 onboarding doc.
+You've shipped Phase 1 (tracks, prompts, videos, toolkits, playlists, challenges, saved library, AI chat, admin, global search). Below is everything in the PRD that is **not yet built**, grouped so you can decide what to ship next.
 
-### New flow (5 steps before email)
+### Gap map
 
 ```text
-1. Name        → "What should we call you?"  (first name only)
-2. Quiz        → 5 quick questions about her real life
-3. Reveal      → "Based on what you told us, your best starting point is [TRACK] with [AGENT]"
-                 + small link: "Not quite right? See all 10 tracks"
-4. Challenge   → Agent asks: "What's the one thing you want off your plate today?"
-5. Email gate  → "Where should we send your win?" (email + password)
-6. Result      → Streaming AI win (unchanged)
+SHIPPED                          MISSING
+─────────────────────────────    ──────────────────────────────────────
+✓ 10 tracks + agents             ✗ Audio mode ("Listen instead")
+✓ Prompt library                 ✗ Prompt Generator (one-click custom)
+✓ Video library                  ✗ Video metadata: duration, "questions
+✓ Toolkit (HTML)                   this answers", difficulty, watched %
+✓ Curated playlists + chapters   ✗ "Do This Now" / "Try in AI" deep-link
+✓ Per-track AI chat                from prompts, videos, templates,
+✓ Saved library                    challenges into the agent
+✓ Admin CRUD                     ✗ Global AI Chat Hub page (agent grid)
+✓ Global search (basic)          ✗ Events module + .ics calendar
+✓ Auth + roles                   ✗ Community: forum, wins, chat rooms
+                                 ✗ Member profile page + progress stats
+                                 ✗ Mobile bottom nav (5 tabs)
+                                 ✗ Admin analytics + AI usage monitor
+                                 ✗ Scout (web/YouTube search agent)
+                                 ✗ Notifications (in-app bell)
 ```
 
-Email stays where it is now — right before the AI generates the win. No email upfront.
+### Recommended build order (3 phases)
 
-### The 5-question quiz
+**Phase 2A — Audio + Action Loop (highest member value)**
+1. **Audio mode for videos.** Generate per-video TTS once on demand via Lovable AI, cache to Storage, expose a "Listen instead" button in `TrackDetail` and Library. Falls back to YouTube embed if generation fails.
+2. **"Do This Now" everywhere.** Add `Try in AI` / `Apply with AI` buttons on prompt, video, template, and challenge cards. Each opens the track agent with a pre-loaded seed message (prompt body, video title + question, template fill request, challenge brief).
+3. **Prompt Generator.** Top-of-library button → modal that asks "what do you need?" → calls Lovable AI to draft a tailored prompt → save to library or send to agent.
+4. **Global AI Chat Hub** at `/chat` — card grid of all 16 agents grouped by category; clicking opens chat without a track context.
 
-Single-select, fast, visual cards. Each answer maps to a track via a scoring table.
+**Phase 2B — Events + Community (retention engines)**
+5. **Events.** New tables `events`, `event_rsvps`. Admin can create Q&As / masterclasses with title, description, speaker bio, date, timezone, platform, join link, track tags, replay URL. Member-facing `/events` lists upcoming + past with **one-click .ics download** (generated client-side) and RSVP. Dashboard surfaces next event.
+6. **Community.** Tables `forum_posts`, `forum_replies`, `forum_reactions`, `wins` (wins are forum_posts with `section='wins'` + featured flag). Sections: Questions / Wins / Resources / Feedback. Track-tagged. "Ask AI about this" button on every post. Track-detail page filters posts to that track. Wins surface on Dashboard.
+7. **Notifications bell** — minimal: new event, reply to your post, featured win.
 
-1. **Where do you want help first?** Home & life admin / At work / In my business / Studying / Creating content / Leading a team
-2. **What's eating most of your energy right now?** Mental load / Career decisions / Selling my offer / Writing & content / Learning new things / People & teams
-3. **How comfortable are you with AI today?** Total beginner / I've dabbled / I use it weekly / I want to go deeper
-4. **What would make this week feel lighter?** A plan I can follow / A hard conversation handled / A piece of content done / A decision made / Time back
-5. **The one thing I wish I had more help with is…** (open text — powers agent greeting, result name, follow-up emails per the doc)
+**Phase 2C — Profile, Progress, Mobile, Admin Analytics**
+8. **Member profile** at `/profile` — display name, avatar, tracks started, videos watched (auto at 80% via player events), prompts used (auto on Copy/Try-in-AI), events attended, notification prefs.
+9. **Progress tracking.** Extend `user_track_progress` (already exists) with completion % computed from videos watched + prompts used. Show progress bar on every track card.
+10. **Mobile bottom tab bar** (Home / Tracks / AI Chat / Community / Saved) replaces hamburger on `<md` viewports.
+11. **Admin analytics dashboard.** New tab in `/admin`: signups over time, AI queries per agent, top saved prompts/videos, event attendance, retention 7/30/90, top search terms. Backed by aggregation queries.
+12. **AI usage monitor + per-member daily query cap** (configurable, enforced in `agent-chat` edge function).
 
-### Track suggestion logic
+**Phase 2D — Polish (defer if needed)**
+13. **Scout search agent** with web/YouTube lookup (Perplexity or Lovable AI + URL fetching).
+14. **Video metadata enrichment**: add `duration_seconds`, `questions_answered jsonb`, `difficulty` to `videos`; show in card and filters.
+15. **Structured Chat rooms** (Weekly Focus, Live Q&A, Track Chats) — built on the same `forum_posts` schema with a `room_id` field and a realtime subscription.
+16. **WhatsApp sprint links** — single admin-managed field surfaced in event detail when a sprint is active.
 
-Simple weighted score across Q1–Q4 → highest scoring track wins. Q1 carries the most weight. Q5 (open text) is stored and passed to the agent as `challenge` context.
+### What I need you to decide
 
-| Q1 answer | Suggested track |
-|---|---|
-| Home & life admin | 02 Home Life Admin (Raya) |
-| At work | 03 Your 9–5 (Zuri) |
-| In my business | 04 AI Business School (Zuri) |
-| Studying | 05 AI For Students (Neo) |
-| Creating content | 06 AI For Creators (Lyric) |
-| Leading a team | 10 Building & Leading With AI (Echo) |
+Pick one of these starting points and I'll execute end-to-end:
 
-Q3 "Total beginner" nudges toward 01 AI Foundations (Neo). Q2/Q4 tie-break.
+- **A — "Make the platform feel alive"**: Phase 2A only (audio + Do This Now + prompt generator + chat hub). Biggest perceived value lift, ~1 build cycle.
+- **B — "Lock in retention"**: Phase 2A + 2B (adds events + community). Roughly twice the surface area.
+- **C — "Full PRD parity"**: 2A → 2D in sequence. I'll ship 2A first and check in before moving on.
 
-### Reveal screen
+### Technical notes for the implementation phase
 
-Per the doc:
-> [Name], based on what you told us, your best starting point is:
-> **[TRACK NAME]**
-> [One-line description in her language]
-> You'll start with **[Agent Name]**.
-> Ready? Let's get your first win.
-
-Secondary text link below: "Not quite right? See all 10 tracks" → opens the existing grid as a fallback override.
-
-### Files to change
-
-- **`src/pages/Onboarding.tsx`** — replace step machine. New steps: `name → quiz → reveal → challenge → signup → result`. Keep existing `signup` + `result` logic untouched; only the front half changes. Q5 free-text becomes the `challenge` value (skip the separate challenge step if Q5 is substantive, otherwise keep the dedicated challenge prompt — we'll keep it for richness).
-- **`src/data/tracks.ts`** — add `suggestTrack(answers)` helper + `QUIZ_QUESTIONS` constant with options and per-option track-score mapping.
-- No DB or edge function changes needed.
-
-### Visual treatment
-
-- Quiz: one question per screen, large tappable cards, progress dots already in header continue to work (we just expand `STEPS`).
-- Reveal: hero treatment with the track's `hueBg`, agent name in `font-handwritten`, sunrise gradient on track title, primary CTA "Let's get my first win →".
-- "See all 10 tracks" opens an inline sheet/grid; selecting overrides the suggestion and jumps to challenge step.
-
-### Out of scope (call out for later)
-
-- Founder welcome video (Step 2 in doc) — skippable video shell
-- Animated transition screen (Step 5 in doc)
-- Pricing trigger after result + 24h/72h email sequence
-- Saving quiz answers to `profiles` (we'll just use them in-session for v1; can persist later)
+- **Audio**: store generated MP3s in a new `audio` storage bucket; key = `videos/{video_id}.mp3`. Edge function `generate-audio` accepts `video_id` + `script`, calls Lovable AI TTS, uploads, returns URL. Cached on second request.
+- **Events**: `.ics` file generated client-side via a tiny helper (no library); 32-line function.
+- **Community**: realtime via `supabase.channel()` on `forum_posts` for new-post indicators. Every post requires a `track_id` to drive the per-track filter.
+- **"Do This Now"**: pass seed via URL param `?seed=<base64>` to `TrackDetail` agent tab; `AgentChat` reads on mount and auto-sends.
+- **No new external API keys required for 2A or 2B** — all AI runs through the existing Lovable AI Gateway.
 
