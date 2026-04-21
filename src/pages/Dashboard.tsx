@@ -6,6 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Flame, Sparkles, Trophy, Bookmark, MessageCircle, ArrowRight } from "lucide-react";
 import { Calendar, Star } from "lucide-react";
 import { GlobalSearch } from "@/components/GlobalSearch";
+import { MomentumBar } from "@/components/MomentumBar";
+import { TrackRing } from "@/components/TrackRing";
+import { levelForXp } from "@/lib/actions";
 
 type DBTrack = { id: string; slug: string; number: string; title: string; tagline: string; agent_name: string; hue: string; tier: string };
 const hueBg = (h: string) => h === "pink" ? "bg-pink" : h === "yellow" ? "bg-yellow" : h === "lavender" ? "bg-lavender" : "bg-blush";
@@ -39,7 +42,12 @@ export default function Dashboard() {
       ]);
       setTracks((tr ?? []) as DBTrack[]);
       const m: Record<string, number> = {};
-      prog?.forEach(r => { m[r.track_slug] = r.percent_complete; });
+      // Compute live completion via RPC for each track (gamification weighted formula).
+      const rows = (tr ?? []) as DBTrack[];
+      const pcts = await Promise.all(rows.map(t =>
+        supabase.rpc("track_completion", { _user: user.id, _track: t.id }).then(r => [t.slug, (r.data as number) ?? 0] as const)
+      ));
+      pcts.forEach(([slug, pct]) => { m[slug] = pct; });
       setProgress(m);
       setSavedCount(saves?.length ?? 0);
       if (conv) setRecentConv({ id: (conv as any).id, title: (conv as any).title, agent: (conv as any).agents?.name ?? "Agent", track_slug: (conv as any).tracks?.slug ?? null });
@@ -77,13 +85,17 @@ export default function Dashboard() {
               <div className="flex gap-3">
                 <Stat icon={<Flame className="w-4 h-4 text-pink" />} label="Streak" value={`${profile.streak_days}d`} />
                 <Stat icon={<Sparkles className="w-4 h-4 text-accent" />} label="XP" value={profile.xp.toString()} />
-                <Stat icon={<Trophy className="w-4 h-4 text-secondary" />} label="Tier" value={tierLabel(tier as any)} />
+                <Stat icon={<Trophy className="w-4 h-4 text-secondary" />} label="Level" value={levelForXp(profile.xp).label} />
               </div>
             </div>
             <div className="mt-8 max-w-2xl">
               <GlobalSearch />
             </div>
           </div>
+        </section>
+
+        <section className="container pt-8">
+          <MomentumBar />
         </section>
 
         {/* Resume + Quick actions */}
