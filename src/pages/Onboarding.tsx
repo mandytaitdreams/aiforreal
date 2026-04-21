@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { TRACKS, hueBg } from "@/data/tracks";
+import { TRACKS, hueBg, QUIZ_QUESTIONS, suggestTrack } from "@/data/tracks";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -11,13 +11,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Sparkles, Loader2 } from "lucide-react";
 
-type Step = "track" | "name" | "challenge" | "signup" | "result";
-const STEPS: Step[] = ["track", "name", "challenge", "signup", "result"];
+type Step = "name" | "quiz" | "reveal" | "challenge" | "signup" | "result";
+const STEPS: Step[] = ["name", "quiz", "reveal", "challenge", "signup", "result"];
 
 export default function Onboarding() {
   const { user, profile, refreshProfile } = useAuth();
   const nav = useNavigate();
-  const [step, setStep] = useState<Step>("track");
+  const [step, setStep] = useState<Step>("name");
   const [trackSlug, setTrackSlug] = useState<string>("");
   const [firstName, setFirstName] = useState("");
   const [challenge, setChallenge] = useState("");
@@ -26,6 +26,9 @@ export default function Onboarding() {
   const [submitting, setSubmitting] = useState(false);
   const [streaming, setStreaming] = useState(false);
   const [result, setResult] = useState("");
+  const [quizIdx, setQuizIdx] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [showAllTracks, setShowAllTracks] = useState(false);
 
   useEffect(() => {
     if (user && profile?.display_name && !firstName) {
@@ -33,7 +36,8 @@ export default function Onboarding() {
     }
   }, [user, profile, firstName]);
 
-  const track = TRACKS.find(t => t.slug === trackSlug);
+  const suggested = Object.keys(answers).length === QUIZ_QUESTIONS.length ? suggestTrack(answers) : null;
+  const track = TRACKS.find(t => t.slug === trackSlug) ?? suggested ?? null;
 
   const generate = async (uid: string, displayName: string) => {
     if (!track || !challenge.trim()) return;
