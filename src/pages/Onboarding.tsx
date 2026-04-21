@@ -158,47 +158,11 @@ export default function Onboarding() {
       </div>
 
       <div className="container max-w-3xl py-12 pb-24">
-        {step === "track" && (
-          <div className="animate-fade-up">
-            <h1 className="font-display font-black text-4xl md:text-5xl leading-tight">
-              Hi there,<br />
-              <span className="text-gradient-sunrise italic">where do you want help first?</span>
-            </h1>
-            <p className="mt-4 text-lg text-muted-foreground">Pick one. You can explore the rest after.</p>
-            <div className="mt-8 grid sm:grid-cols-2 gap-3">
-              {TRACKS.map(t => (
-                <button
-                  key={t.slug}
-                  onClick={() => { setTrackSlug(t.slug); setStep("name"); }}
-                  className={`text-left p-5 rounded-2xl bg-card border-2 transition-all hover:shadow-card hover:-translate-y-0.5 ${
-                    trackSlug === t.slug ? "border-primary shadow-warm" : "border-border"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className={`w-10 h-10 rounded-full ${hueBg(t.hue)} flex items-center justify-center font-display font-black text-sm text-foreground`}>{t.number}</span>
-                    <div>
-                      <div className="font-display font-bold leading-tight">{t.title}</div>
-                      <div className="text-xs text-muted-foreground italic">with {t.agentName}</div>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {step === "name" && track && (
+        {step === "name" && (
           <div className="animate-fade-up max-w-2xl">
-            <button onClick={() => setStep("track")} className="text-sm text-muted-foreground hover:text-foreground mb-6">
-              ← Pick a different track
-            </button>
-            <div className="flex items-center gap-3 mb-2">
-              <span className={`w-12 h-12 rounded-full ${hueBg(track.hue)} flex items-center justify-center font-display font-black text-base text-foreground`}>{track.number}</span>
-              <span className="text-sm text-muted-foreground">Meet <strong className="text-foreground">{track.agentName}</strong> · {track.agentRole}</span>
-            </div>
             <h1 className="font-display font-black text-4xl md:text-5xl leading-tight">
-              First — what should<br />
-              <span className="text-gradient-sunrise italic">{track.agentName} call you?</span>
+              Hi there —<br />
+              <span className="text-gradient-sunrise italic">what should we call you?</span>
             </h1>
             <p className="mt-4 text-muted-foreground">Just your first name is fine.</p>
             <Input
@@ -208,10 +172,10 @@ export default function Onboarding() {
               autoFocus
               maxLength={50}
               className="mt-6 h-14 rounded-2xl text-lg p-4 bg-card border-2 focus-visible:ring-primary"
-              onKeyDown={e => { if (e.key === "Enter" && firstName.trim()) setStep("challenge"); }}
+              onKeyDown={e => { if (e.key === "Enter" && firstName.trim()) setStep("quiz"); }}
             />
             <Button
-              onClick={() => setStep("challenge")}
+              onClick={() => setStep("quiz")}
               disabled={!firstName.trim()}
               size="lg"
               className="mt-6 h-12 px-8 rounded-full bg-gradient-brand text-primary-foreground border-0 shadow-pink hover:opacity-95 font-semibold"
@@ -221,9 +185,102 @@ export default function Onboarding() {
           </div>
         )}
 
+        {step === "quiz" && (() => {
+          const q = QUIZ_QUESTIONS[quizIdx];
+          return (
+            <div className="animate-fade-up max-w-2xl">
+              <button
+                onClick={() => quizIdx === 0 ? setStep("name") : setQuizIdx(quizIdx - 1)}
+                className="text-sm text-muted-foreground hover:text-foreground mb-6"
+              >
+                ← Back
+              </button>
+              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
+                Question {quizIdx + 1} of {QUIZ_QUESTIONS.length}
+              </div>
+              <h1 className="font-display font-black text-3xl md:text-4xl leading-tight">
+                {firstName ? `${firstName} — ` : ""}<span className="text-gradient-sunrise italic">{q.prompt}</span>
+              </h1>
+              <div className="mt-8 grid sm:grid-cols-2 gap-3">
+                {q.options.map((opt, i) => (
+                  <button
+                    key={opt.label}
+                    onClick={() => {
+                      const next = { ...answers, [q.id]: i };
+                      setAnswers(next);
+                      if (quizIdx < QUIZ_QUESTIONS.length - 1) setQuizIdx(quizIdx + 1);
+                      else setStep("reveal");
+                    }}
+                    className="text-left p-5 rounded-2xl bg-card border-2 border-border transition-all hover:shadow-card hover:-translate-y-0.5 hover:border-primary font-display font-semibold"
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        {step === "reveal" && track && (
+          <div className="animate-fade-up max-w-2xl">
+            <button onClick={() => { setQuizIdx(QUIZ_QUESTIONS.length - 1); setStep("quiz"); }} className="text-sm text-muted-foreground hover:text-foreground mb-6">
+              ← Back
+            </button>
+            <p className="text-lg text-muted-foreground">
+              {firstName}, based on what you told us, your best starting point is:
+            </p>
+            <div className={`mt-6 p-8 rounded-3xl ${hueBg(track.hue)} shadow-warm`}>
+              <div className="text-xs uppercase tracking-wider text-foreground/70 font-bold">Track {track.number}</div>
+              <h1 className="mt-2 font-display font-black text-4xl md:text-5xl leading-tight text-foreground">
+                {track.title}
+              </h1>
+              <p className="mt-3 text-foreground/80 text-lg">{track.tagline}</p>
+              <p className="mt-6 text-foreground">
+                You'll start with <span className="font-handwritten text-2xl">{track.agentName}</span> — {track.agentRole}.
+              </p>
+            </div>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+              <Button
+                onClick={() => setStep("challenge")}
+                size="lg"
+                className="h-12 px-8 rounded-full bg-gradient-brand text-primary-foreground border-0 shadow-pink hover:opacity-95 font-semibold"
+              >
+                Let's get my first win →
+              </Button>
+              <button
+                onClick={() => setShowAllTracks(v => !v)}
+                className="text-sm text-muted-foreground underline hover:text-foreground"
+              >
+                {showAllTracks ? "Hide" : "Not quite right? See all 10 tracks"}
+              </button>
+            </div>
+            {showAllTracks && (
+              <div className="mt-6 grid sm:grid-cols-2 gap-3">
+                {TRACKS.map(t => (
+                  <button
+                    key={t.slug}
+                    onClick={() => { setTrackSlug(t.slug); setStep("challenge"); }}
+                    className={`text-left p-4 rounded-2xl bg-card border-2 transition-all hover:shadow-card hover:-translate-y-0.5 ${
+                      track.slug === t.slug ? "border-primary" : "border-border"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={`w-9 h-9 rounded-full ${hueBg(t.hue)} flex items-center justify-center font-display font-black text-xs text-foreground`}>{t.number}</span>
+                      <div>
+                        <div className="font-display font-bold text-sm leading-tight">{t.title}</div>
+                        <div className="text-xs text-muted-foreground italic">with {t.agentName}</div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {step === "challenge" && track && (
           <div className="animate-fade-up max-w-2xl">
-            <button onClick={() => setStep("name")} className="text-sm text-muted-foreground hover:text-foreground mb-6">
+            <button onClick={() => setStep("reveal")} className="text-sm text-muted-foreground hover:text-foreground mb-6">
               ← Back
             </button>
             <div className="flex items-center gap-3 mb-2">
