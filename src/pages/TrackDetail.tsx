@@ -17,7 +17,8 @@ type Prompt = { id: string; title: string; body: string; use_case: string; diffi
 type Video = { id: string; title: string; description: string | null; duration_minutes: number; youtube_id: string | null; questions_answered: string[] };
 type Tool = { id: string; name: string; description: string; use_case: string | null; url: string | null; html_content: string | null };
 type Template = { id: string; title: string; body: string; use_case: string; problem_solved: string | null };
-type Playlist = { id: string; title: string; youtube_url: string; creator: string | null; duration_minutes: number | null };
+type Chapter = { label: string; t: number };
+type Playlist = { id: string; title: string; youtube_url: string; creator: string | null; duration_minutes: number | null; chapters: Chapter[] };
 type Challenge = { id: string; title: string; description: string; success_metric: string | null; kind: string };
 
 const hueClass = (h: string) => h === "pink" ? "bg-pink" : h === "yellow" ? "bg-yellow" : h === "lavender" ? "bg-lavender" : "bg-blush";
