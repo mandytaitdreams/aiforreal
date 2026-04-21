@@ -61,12 +61,46 @@ export default function Profile() {
         <p className="text-muted-foreground">A quiet place to see how far you've come.</p>
 
         <section className="mt-8 p-6 rounded-3xl bg-card border border-border shadow-soft">
-          <div className="flex flex-wrap gap-3">
+          <div>
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">Member level</div>
+            <div className="mt-1 font-display font-black text-3xl">{lvl.label}</div>
+            {lvl.nextAt && <div className="text-xs text-muted-foreground mt-0.5">{lvl.nextAt - profile.xp} XP to next level</div>}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-3">
             <Stat icon={<Flame className="w-4 h-4 text-pink"/>} label="Streak" value={`${profile.streak_days}d`} />
             <Stat icon={<Sparkles className="w-4 h-4 text-accent"/>} label="XP" value={`${profile.xp}`} />
             <Stat icon={<Trophy className="w-4 h-4 text-secondary"/>} label="Tier" value={profile.tier} />
           </div>
         </section>
+
+        <section className="mt-6 p-6 rounded-3xl bg-card border border-border shadow-soft">
+          <h2 className="font-display font-bold text-xl">Badges</h2>
+          <div className="mt-4 grid sm:grid-cols-2 gap-3">
+            {Object.entries(BADGES).map(([code, b]) => {
+              const has = earned.has(code);
+              return (
+                <div key={code} className={`flex items-center gap-3 p-3 rounded-2xl border ${has ? "bg-pink/5 border-pink/30" : "bg-blush/30 border-border opacity-60"}`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl ${has ? "bg-pink/15" : "bg-muted grayscale"}`}>{b.emoji}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-sm">{b.label}</div>
+                    <div className="text-xs text-muted-foreground">{b.description}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {inviteUrl && (
+          <section className="mt-6 p-6 rounded-3xl bg-gradient-cream border border-pink/20 shadow-soft">
+            <h2 className="font-display font-bold text-xl">Invite friends</h2>
+            <p className="text-sm text-muted-foreground mt-1">Share your link. Each friend who joins helps you level up.</p>
+            <div className="mt-3 flex gap-2">
+              <Input readOnly value={inviteUrl} className="rounded-xl font-mono text-xs" />
+              <Button onClick={() => { navigator.clipboard.writeText(inviteUrl); toast.success("Link copied"); }} className="rounded-full bg-pink text-white hover:bg-pink/90"><Copy className="w-3.5 h-3.5"/> Copy</Button>
+            </div>
+          </section>
+        )}
 
         <section className="mt-6 p-6 rounded-3xl bg-card border border-border shadow-soft space-y-4">
           <h2 className="font-display font-bold text-xl">Display name</h2>
