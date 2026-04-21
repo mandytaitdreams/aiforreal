@@ -15,6 +15,7 @@ import { Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { AnalyticsPanel } from "@/components/admin/AnalyticsPanel";
+import { BulkUpload } from "@/components/admin/BulkUpload";
 
 type Track = { id: string; slug: string; number: string; title: string };
 
@@ -193,6 +194,14 @@ export default function Admin() {
             </Select>
           </div>
           <Button onClick={startNew} className="rounded-full bg-pink text-white hover:bg-pink/90"><Plus className="w-4 h-4 mr-1.5"/>New {type.slice(0, -1)}</Button>
+          <BulkUpload
+            key={`${type}-${trackId}`}
+            table={type}
+            fields={TYPE_FIELDS[type]}
+            fixed={{ track_id: trackId }}
+            label={type}
+            onDone={loadRows}
+          />
         </div>
 
         <Tabs value={type} onValueChange={(v) => setType(v as ContentType)} className="mt-6">
@@ -455,7 +464,41 @@ function EventsAdmin() {
     <section className="mt-10">
       <div className="flex items-center justify-between gap-3 mb-4">
         <h2 className="font-display font-black text-2xl flex items-center gap-2"><Calendar className="w-5 h-5 text-pink"/> Events</h2>
-        <Button onClick={() => { setEditing(blankEvent()); setOpen(true); }} className="rounded-full bg-pink text-white hover:bg-pink/90"><Plus className="w-4 h-4"/> New event</Button>
+        <div className="flex gap-2">
+          <BulkUpload
+            table="events"
+            label="events"
+            fields={[
+              { name: "title" }, { name: "description", type: "textarea" },
+              { name: "speaker_name" }, { name: "speaker_bio", type: "textarea" },
+              { name: "starts_at" }, { name: "duration_minutes", type: "number" },
+              { name: "timezone" }, { name: "platform" },
+              { name: "join_url", type: "url" }, { name: "replay_url", type: "url" },
+              { name: "cover_url", type: "url" },
+            ]}
+            sampleRow={{
+              title: "Live Q&A with Pia",
+              description: "Bring your stuck moments.",
+              speaker_name: "Pia",
+              speaker_bio: "Founder",
+              starts_at: new Date(Date.now() + 7 * 86400000).toISOString(),
+              duration_minutes: 60,
+              timezone: "UTC",
+              platform: "Zoom",
+              join_url: "https://zoom.us/j/123",
+              replay_url: "",
+              cover_url: "",
+            }}
+            transformRow={(r) => ({
+              ...r,
+              starts_at: r.starts_at ? new Date(r.starts_at).toISOString() : null,
+              duration_minutes: Number(r.duration_minutes) || 60,
+              published: true,
+            })}
+            onDone={load}
+          />
+          <Button onClick={() => { setEditing(blankEvent()); setOpen(true); }} className="rounded-full bg-pink text-white hover:bg-pink/90"><Plus className="w-4 h-4"/> New event</Button>
+        </div>
       </div>
       {rows.length === 0 ? (
         <div className="text-center py-10 text-muted-foreground rounded-2xl bg-card border border-border">No events yet.</div>
