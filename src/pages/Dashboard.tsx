@@ -27,7 +27,8 @@ export default function Dashboard() {
 
   if (loading || !profile) return <div className="min-h-screen bg-background" />;
 
-  const tier = profile.tier === "free" ? "try" : profile.tier;
+  // DEV: unlock all tiers in this environment
+  const tier = "power";
 
   return (
     <div className="min-h-screen bg-background">
@@ -74,7 +75,7 @@ export default function Dashboard() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {TRACKS.map(t => {
               const pct = progress[t.slug] ?? 0;
-              const locked = t.tier === "power" && tier !== "power";
+              const locked = false;
               return (
                 <Link
                   key={t.slug}
