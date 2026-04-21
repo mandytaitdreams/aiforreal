@@ -277,7 +277,7 @@ export default function Onboarding() {
               >
                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Sparkles className="w-4 h-4 mr-2" /> Unlock my first win</>}
               </Button>
-              <p className="text-xs text-muted-foreground text-center">No credit card. Free forever plan.</p>
+               <p className="text-xs text-muted-foreground text-center">No credit card required</p>
             </form>
           </div>
         )}
