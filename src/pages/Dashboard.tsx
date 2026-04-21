@@ -191,13 +191,16 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <span className="font-display font-black text-2xl text-muted-foreground/40">{t.number}</span>
                     {locked && <span className="text-xs px-2 py-1 rounded-full bg-secondary text-secondary-foreground">Power tier</span>}
-                    {!locked && pct > 0 && <span className="text-xs px-2 py-1 rounded-full bg-accent/20 text-accent-foreground font-semibold">{pct}%</span>}
+                    {!locked && <TrackRing pct={pct} size={44} />}
                   </div>
                   <h3 className="mt-4 font-display font-bold text-lg leading-tight">{t.title}</h3>
                   <p className="mt-1 text-xs text-muted-foreground">with {t.agent_name}</p>
                   {!locked && (
-                    <div className="mt-4 h-1 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-brand transition-all" style={{ width: `${pct}%` }} />
+                    <div className="mt-4">
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{stageFromPct(pct)}</div>
+                      <div className="mt-1 h-1 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-brand transition-all" style={{ width: `${pct}%` }} />
+                      </div>
                     </div>
                   )}
                 </Link>
@@ -216,3 +219,10 @@ const Stat = ({ icon, label, value }: { icon: React.ReactNode; label: string; va
     <div className="font-display font-black text-2xl text-foreground">{value}</div>
   </div>
 );
+
+function stageFromPct(pct: number): string {
+  if (pct >= 80) return "Mastery";
+  if (pct >= 50) return "Practising";
+  if (pct >= 20) return "Building";
+  return "Starter";
+}
