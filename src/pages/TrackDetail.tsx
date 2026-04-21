@@ -203,19 +203,29 @@ export default function TrackDetail() {
 
             <TabsContent value="toolkit" className="mt-8">
               {tools.length === 0 ? <Empty label="Toolkit coming soon" /> : (
-                <div className="grid md:grid-cols-3 gap-5">
+                <div className="space-y-6">
                   {tools.map(t => (
                     <div key={t.id} className="p-6 rounded-3xl bg-card border border-border shadow-soft">
-                      <div className="flex items-start justify-between">
-                        <h3 className="font-display font-bold text-lg">{t.name}</h3>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <h3 className="font-display font-bold text-lg">{t.name}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">{t.description}</p>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {t.use_case && <Badge variant="secondary" className="rounded-full">{t.use_case}</Badge>}
+                            {t.url && (
+                              <a href={t.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-pink hover:underline">
+                                Open source <ExternalLink className="w-3 h-3"/>
+                              </a>
+                            )}
+                          </div>
+                        </div>
                         <SaveBtn saved={savedIds.has(t.id)} onClick={() => toggleSave(t.id, "tool")} />
                       </div>
-                      <p className="text-sm text-muted-foreground mt-2">{t.description}</p>
-                      {t.use_case && <Badge variant="secondary" className="rounded-full mt-3">{t.use_case}</Badge>}
-                      {t.url && (
-                        <a href={t.url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-pink hover:underline">
-                          Open <ExternalLink className="w-3.5 h-3.5"/>
-                        </a>
+                      {t.html_content && (
+                        <div
+                          className="mt-5 p-5 rounded-2xl bg-blush/50 border border-border prose prose-sm max-w-none prose-headings:font-display prose-headings:text-foreground prose-a:text-pink prose-strong:text-foreground"
+                          dangerouslySetInnerHTML={{ __html: t.html_content }}
+                        />
                       )}
                     </div>
                   ))}
