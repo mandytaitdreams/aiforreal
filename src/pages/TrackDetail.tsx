@@ -376,6 +376,35 @@ export default function TrackDetail() {
                 <AgentChat agent={agent} trackId={track.id} seedPrompt={seedPrompt} />
               ) : <Empty label="Agent setup in progress" />}
             </TabsContent>
+
+            <TabsContent value="transcripts" className="mt-8">
+              {videos.filter(v => v.transcript && v.transcript.trim()).length === 0 ? (
+                <Empty label="No transcripts yet" />
+              ) : (
+                <div className="space-y-5">
+                  {videos.filter(v => v.transcript && v.transcript.trim()).map(v => (
+                    <details key={v.id} id={`transcript-${v.id}`} className="group p-6 rounded-3xl bg-card border border-border shadow-soft scroll-mt-24" open>
+                      <summary className="flex items-center justify-between gap-3 cursor-pointer list-none">
+                        <div className="min-w-0">
+                          <h3 className="font-display font-bold text-lg truncate">{v.title}</h3>
+                          <div className="flex flex-wrap gap-1.5 mt-1">
+                            <Badge variant="secondary" className="rounded-full text-xs">{v.duration_minutes} min</Badge>
+                            <Badge variant="outline" className="rounded-full text-xs"><ScrollText className="w-3 h-3 mr-1"/>Transcript</Badge>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 shrink-0">
+                          <Button size="sm" variant="outline" onClick={(e) => { e.preventDefault(); copyText(v.transcript!); }} className="rounded-full"><Copy className="w-3.5 h-3.5 mr-1.5"/>Copy</Button>
+                          <Button size="sm" onClick={(e) => { e.preventDefault(); tryInChat(`Summarise this transcript and pull out the 3 most useful actions for me:\n\n${v.transcript}`); }} className="rounded-full bg-pink text-white hover:bg-pink/90"><Sparkles className="w-3.5 h-3.5 mr-1.5"/>Ask AI</Button>
+                        </div>
+                      </summary>
+                      <div className="mt-4 p-4 bg-blush rounded-2xl text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed max-h-[28rem] overflow-auto">
+                        {v.transcript}
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
           </Tabs>
         </section>
       </main>
