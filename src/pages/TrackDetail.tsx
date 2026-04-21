@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AgentChat } from "@/components/track/AgentChat";
-import { Bookmark, BookmarkCheck, Copy, ExternalLink, PlayCircle, Sparkles, Wrench, FileText, Youtube, MessageCircle, Target, Headphones } from "lucide-react";
+import { Bookmark, BookmarkCheck, Copy, ExternalLink, PlayCircle, Sparkles, Wrench, FileText, Youtube, MessageCircle, Target, Headphones, ScrollText } from "lucide-react";
 import { toast } from "sonner";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { AudioPlayer, ListenToggle } from "@/components/track/AudioPlayer";
@@ -16,7 +16,7 @@ import { PromptGenerator } from "@/components/track/PromptGenerator";
 type Track = { id: string; slug: string; number: string; title: string; tagline: string; description: string; agent_name: string; agent_role: string; hue: string; tier: string };
 type Agent = { id: string; name: string; role: string; tagline: string; system_prompt: string; model: string };
 type Prompt = { id: string; title: string; body: string; use_case: string; difficulty: string };
-type Video = { id: string; title: string; description: string | null; duration_minutes: number; youtube_id: string | null; questions_answered: string[]; audio_url: string | null; audio_path: string | null };
+type Video = { id: string; title: string; description: string | null; duration_minutes: number; youtube_id: string | null; questions_answered: string[]; audio_url: string | null; audio_path: string | null; transcript: string | null };
 type Tool = { id: string; name: string; description: string; use_case: string | null; url: string | null; html_content: string | null };
 type Template = { id: string; title: string; body: string; use_case: string; problem_solved: string | null };
 type Chapter = { label: string; t: number };
@@ -195,6 +195,7 @@ export default function TrackDetail() {
               <TabsTrigger value="templates" className="rounded-full data-[state=active]:bg-pink data-[state=active]:text-white"><FileText className="w-4 h-4 mr-1.5"/>Templates</TabsTrigger>
               <TabsTrigger value="playlists" className="rounded-full data-[state=active]:bg-pink data-[state=active]:text-white"><Youtube className="w-4 h-4 mr-1.5"/>Playlists</TabsTrigger>
               <TabsTrigger value="challenges" className="rounded-full data-[state=active]:bg-pink data-[state=active]:text-white"><Target className="w-4 h-4 mr-1.5"/>Do This Now</TabsTrigger>
+              <TabsTrigger value="transcripts" className="rounded-full data-[state=active]:bg-pink data-[state=active]:text-white"><ScrollText className="w-4 h-4 mr-1.5"/>Transcripts</TabsTrigger>
               <TabsTrigger value="agent" id="agent-tab" className="rounded-full data-[state=active]:bg-pink data-[state=active]:text-white"><MessageCircle className="w-4 h-4 mr-1.5"/>Ask {agent?.name ?? "Agent"}</TabsTrigger>
             </TabsList>
 
@@ -374,6 +375,35 @@ export default function TrackDetail() {
               {agent ? (
                 <AgentChat agent={agent} trackId={track.id} seedPrompt={seedPrompt} />
               ) : <Empty label="Agent setup in progress" />}
+            </TabsContent>
+
+            <TabsContent value="transcripts" className="mt-8">
+              {videos.filter(v => v.transcript && v.transcript.trim()).length === 0 ? (
+                <Empty label="No transcripts yet" />
+              ) : (
+                <div className="space-y-5">
+                  {videos.filter(v => v.transcript && v.transcript.trim()).map(v => (
+                    <details key={v.id} id={`transcript-${v.id}`} className="group p-6 rounded-3xl bg-card border border-border shadow-soft scroll-mt-24" open>
+                      <summary className="flex items-center justify-between gap-3 cursor-pointer list-none">
+                        <div className="min-w-0">
+                          <h3 className="font-display font-bold text-lg truncate">{v.title}</h3>
+                          <div className="flex flex-wrap gap-1.5 mt-1">
+                            <Badge variant="secondary" className="rounded-full text-xs">{v.duration_minutes} min</Badge>
+                            <Badge variant="outline" className="rounded-full text-xs"><ScrollText className="w-3 h-3 mr-1"/>Transcript</Badge>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 shrink-0">
+                          <Button size="sm" variant="outline" onClick={(e) => { e.preventDefault(); copyText(v.transcript!); }} className="rounded-full"><Copy className="w-3.5 h-3.5 mr-1.5"/>Copy</Button>
+                          <Button size="sm" onClick={(e) => { e.preventDefault(); tryInChat(`Summarise this transcript and pull out the 3 most useful actions for me:\n\n${v.transcript}`); }} className="rounded-full bg-pink text-white hover:bg-pink/90"><Sparkles className="w-3.5 h-3.5 mr-1.5"/>Ask AI</Button>
+                        </div>
+                      </summary>
+                      <div className="mt-4 p-4 bg-blush rounded-2xl text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed max-h-[28rem] overflow-auto">
+                        {v.transcript}
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </section>
