@@ -403,3 +403,100 @@ function ChaptersEditor({ value, onChange }: { value: Chapter[]; onChange: (next
     </div>
   );
 }
+
+type EventForm = {
+  id?: string; title: string; description: string; speaker_name: string;
+  starts_at: string; duration_minutes: number; timezone: string;
+  platform: string; join_url: string; replay_url: string; published: boolean;
+};
+const blankEvent = (): EventForm => ({
+  title: "", description: "", speaker_name: "",
+  starts_at: new Date(Date.now() + 3 * 24 * 3600_000).toISOString().slice(0, 16),
+  duration_minutes: 60, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  platform: "Zoom", join_url: "", replay_url: "", published: true,
+});
+
+function EventsAdmin() {
+  const [rows, setRows] = useState<any[]>([]);
+  const [editing, setEditing] = useState<EventForm | null>(null);
+  const [open, setOpen] = useState(false);
+
+  const load = async () => {
+    const { data } = await supabase.from("events").select("*").order("starts_at", { ascending: false });
+    setRows(data ?? []);
+  };
+  useEffect(() => { load(); }, []);
+
+  const save = async () => {
+    if (!editing) return;
+    const payload = {
+      ...editing,
+      starts_at: new Date(editing.starts_at).toISOString(),
+      duration_minutes: Number(editing.duration_minutes) || 60,
+    };
+    const { error } = await supabase.from("events").upsert(payload as any);
+    if (error) return toast.error(error.message);
+    toast.success("Saved");
+    setOpen(false); setEditing(null); load();
+  };
+  const remove = async (id: string) => {
+    if (!confirm("Delete this event?")) return;
+    await supabase.from("events").delete().eq("id", id);
+    load();
+  };
+
+  return (
+    <section className="mt-10">
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <h2 className="font-display font-black text-2xl flex items-center gap-2"><Calendar className="w-5 h-5 text-pink"/> Events</h2>
+        <Button onClick={() => { setEditing(blankEvent()); setOpen(true); }} className="rounded-full bg-pink text-white hover:bg-pink/90"><Plus className="w-4 h-4"/> New event</Button>
+      </div>
+      {rows.length === 0 ? (
+        <div className="text-center py-10 text-muted-foreground rounded-2xl bg-card border border-border">No events yet.</div>
+      ) : (
+        <div className="space-y-2">
+          {rows.map(r => (
+            <div key={r.id} className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border shadow-soft">
+              <div className="flex-1 min-w-0">
+                <div className="font-bold truncate">{r.title}</div>
+                <div className="text-xs text-muted-foreground">{new Date(r.starts_at).toLocaleString()} · {r.platform || "—"} {r.published ? "" : "· Draft"}</div>
+              </div>
+              <Button size="sm" variant="outline" className="rounded-full" onClick={() => { setEditing({ ...r, starts_at: new Date(r.starts_at).toISOString().slice(0,16) }); setOpen(true); }}><Pencil className="w-3.5 h-3.5"/></Button>
+              <Button size="sm" variant="outline" className="rounded-full text-destructive border-destructive/30" onClick={() => remove(r.id)}><Trash2 className="w-3.5 h-3.5"/></Button>
+            </div>
+          ))}
+        </div>
+      )}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="font-display">{editing?.id ? "Edit event" : "New event"}</DialogTitle></DialogHeader>
+          {editing && (
+            <div className="space-y-3">
+              <div><Label>Title</Label><Input value={editing.title} onChange={e => setEditing({ ...editing, title: e.target.value })} className="rounded-xl"/></div>
+              <div><Label>Description</Label><Textarea value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} rows={4} className="rounded-xl"/></div>
+              <div><Label>Speaker</Label><Input value={editing.speaker_name} onChange={e => setEditing({ ...editing, speaker_name: e.target.value })} className="rounded-xl"/></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Start (local)</Label><Input type="datetime-local" value={editing.starts_at} onChange={e => setEditing({ ...editing, starts_at: e.target.value })} className="rounded-xl"/></div>
+                <div><Label>Duration (min)</Label><Input type="number" value={editing.duration_minutes} onChange={e => setEditing({ ...editing, duration_minutes: Number(e.target.value) })} className="rounded-xl"/></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label>Timezone</Label><Input value={editing.timezone} onChange={e => setEditing({ ...editing, timezone: e.target.value })} className="rounded-xl"/></div>
+                <div><Label>Platform</Label><Input value={editing.platform} onChange={e => setEditing({ ...editing, platform: e.target.value })} className="rounded-xl"/></div>
+              </div>
+              <div><Label>Join URL</Label><Input type="url" value={editing.join_url} onChange={e => setEditing({ ...editing, join_url: e.target.value })} className="rounded-xl"/></div>
+              <div><Label>Replay URL (after the event)</Label><Input type="url" value={editing.replay_url} onChange={e => setEditing({ ...editing, replay_url: e.target.value })} className="rounded-xl"/></div>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={editing.published} onChange={e => setEditing({ ...editing, published: e.target.checked })}/>
+                Published (visible to members)
+              </label>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" className="rounded-full" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button className="rounded-full bg-pink text-white hover:bg-pink/90" onClick={save}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </section>
+  );
+}
