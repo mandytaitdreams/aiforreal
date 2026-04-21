@@ -14,6 +14,207 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_conversations: {
+        Row: {
+          agent_id: string
+          created_at: string
+          id: string
+          pinned: boolean
+          title: string
+          track_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string
+          id?: string
+          pinned?: boolean
+          title?: string
+          track_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string
+          id?: string
+          pinned?: boolean
+          title?: string
+          track_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_conversations_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_conversations_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "agent_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agents: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          model: string
+          name: string
+          role: string
+          system_prompt: string
+          tagline: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          model?: string
+          name: string
+          role: string
+          system_prompt: string
+          tagline: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          model?: string
+          name?: string
+          role?: string
+          system_prompt?: string
+          tagline?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      challenges: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          kind: string
+          sort_order: number
+          success_metric: string | null
+          title: string
+          track_id: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          kind?: string
+          sort_order?: number
+          success_metric?: string | null
+          title: string
+          track_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          kind?: string
+          sort_order?: number
+          success_metric?: string | null
+          title?: string
+          track_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      playlists: {
+        Row: {
+          created_at: string
+          creator: string | null
+          duration_minutes: number | null
+          id: string
+          sort_order: number
+          title: string
+          track_id: string
+          youtube_url: string
+        }
+        Insert: {
+          created_at?: string
+          creator?: string | null
+          duration_minutes?: number | null
+          id?: string
+          sort_order?: number
+          title: string
+          track_id: string
+          youtube_url: string
+        }
+        Update: {
+          created_at?: string
+          creator?: string | null
+          duration_minutes?: number | null
+          id?: string
+          sort_order?: number
+          title?: string
+          track_id?: string
+          youtube_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "playlists_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -56,6 +257,267 @@ export type Database = {
           updated_at?: string
           user_id?: string
           xp?: number
+        }
+        Relationships: []
+      }
+      prompts: {
+        Row: {
+          agent_id: string | null
+          body: string
+          created_at: string
+          difficulty: string
+          id: string
+          sort_order: number
+          title: string
+          track_id: string
+          updated_at: string
+          use_case: string
+        }
+        Insert: {
+          agent_id?: string | null
+          body: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          sort_order?: number
+          title: string
+          track_id: string
+          updated_at?: string
+          use_case: string
+        }
+        Update: {
+          agent_id?: string | null
+          body?: string
+          created_at?: string
+          difficulty?: string
+          id?: string
+          sort_order?: number
+          title?: string
+          track_id?: string
+          updated_at?: string
+          use_case?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompts_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prompts_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_items: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          item_type: string
+          note: string | null
+          track_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          item_type: string
+          note?: string | null
+          track_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          item_type?: string
+          note?: string | null
+          track_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_items_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      templates: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          problem_solved: string | null
+          sort_order: number
+          title: string
+          track_id: string
+          updated_at: string
+          use_case: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          problem_solved?: string | null
+          sort_order?: number
+          title: string
+          track_id: string
+          updated_at?: string
+          use_case: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          problem_solved?: string | null
+          sort_order?: number
+          title?: string
+          track_id?: string
+          updated_at?: string
+          use_case?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "templates_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tools: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          name: string
+          sort_order: number
+          track_id: string
+          updated_at: string
+          url: string | null
+          use_case: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          name: string
+          sort_order?: number
+          track_id: string
+          updated_at?: string
+          url?: string | null
+          use_case?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          sort_order?: number
+          track_id?: string
+          updated_at?: string
+          url?: string | null
+          use_case?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tools_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      track_agents: {
+        Row: {
+          agent_id: string
+          is_primary: boolean
+          track_id: string
+        }
+        Insert: {
+          agent_id: string
+          is_primary?: boolean
+          track_id: string
+        }
+        Update: {
+          agent_id?: string
+          is_primary?: boolean
+          track_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "track_agents_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "track_agents_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tracks: {
+        Row: {
+          agent_name: string
+          agent_role: string
+          created_at: string
+          description: string
+          hue: string
+          id: string
+          number: string
+          slug: string
+          sort_order: number
+          tagline: string
+          tier: Database["public"]["Enums"]["membership_tier"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          agent_name: string
+          agent_role: string
+          created_at?: string
+          description: string
+          hue: string
+          id?: string
+          number: string
+          slug: string
+          sort_order?: number
+          tagline: string
+          tier?: Database["public"]["Enums"]["membership_tier"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          agent_name?: string
+          agent_role?: string
+          created_at?: string
+          description?: string
+          hue?: string
+          id?: string
+          number?: string
+          slug?: string
+          sort_order?: number
+          tagline?: string
+          tier?: Database["public"]["Enums"]["membership_tier"]
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -106,6 +568,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      videos: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_minutes: number
+          id: string
+          presentation_url: string | null
+          published: boolean
+          questions_answered: string[]
+          sort_order: number
+          tags: string[]
+          title: string
+          track_id: string
+          updated_at: string
+          youtube_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          presentation_url?: string | null
+          published?: boolean
+          questions_answered?: string[]
+          sort_order?: number
+          tags?: string[]
+          title: string
+          track_id: string
+          updated_at?: string
+          youtube_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          presentation_url?: string | null
+          published?: boolean
+          questions_answered?: string[]
+          sort_order?: number
+          tags?: string[]
+          title?: string
+          track_id?: string
+          updated_at?: string
+          youtube_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "videos_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
