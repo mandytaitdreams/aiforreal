@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { Flame, Sparkles, Trophy, Bookmark, MessageCircle, ArrowRight } from "lucide-react";
+import { Calendar, Star } from "lucide-react";
 import { GlobalSearch } from "@/components/GlobalSearch";
 
 type DBTrack = { id: string; slug: string; number: string; title: string; tagline: string; agent_name: string; hue: string; tier: string };
@@ -17,6 +18,8 @@ export default function Dashboard() {
   const [tracks, setTracks] = useState<DBTrack[]>([]);
   const [savedCount, setSavedCount] = useState(0);
   const [recentConv, setRecentConv] = useState<{ id: string; title: string; agent: string; track_slug: string | null } | null>(null);
+  const [nextEvent, setNextEvent] = useState<{ id: string; title: string; starts_at: string } | null>(null);
+  const [featuredWins, setFeaturedWins] = useState<{ id: string; title: string; body: string }[]>([]);
 
   useEffect(() => {
     if (!loading && !user) nav("/auth", { replace: true });
@@ -40,6 +43,12 @@ export default function Dashboard() {
       setProgress(m);
       setSavedCount(saves?.length ?? 0);
       if (conv) setRecentConv({ id: (conv as any).id, title: (conv as any).title, agent: (conv as any).agents?.name ?? "Agent", track_slug: (conv as any).tracks?.slug ?? null });
+      const [{ data: ev }, { data: wins }] = await Promise.all([
+        supabase.from("events").select("id, title, starts_at").eq("published", true).gte("starts_at", new Date().toISOString()).order("starts_at").limit(1).maybeSingle(),
+        supabase.from("forum_posts").select("id, title, body").eq("section", "wins").eq("featured", true).order("updated_at", { ascending: false }).limit(3),
+      ]);
+      if (ev) setNextEvent(ev as any);
+      setFeaturedWins((wins ?? []) as any);
     })();
   }, [user]);
 
