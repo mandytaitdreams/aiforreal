@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { TRACKS, tierLabel } from "@/data/tracks";
+import { TRACKS, tierLabel, hueBg } from "@/data/tracks";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Lock, PlayCircle, Clock } from "lucide-react";

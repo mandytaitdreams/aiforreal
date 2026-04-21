@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { TRACKS, tierLabel } from "@/data/tracks";
+import { TRACKS, tierLabel, hueBg } from "@/data/tracks";
 import { SiteHeader } from "@/components/SiteHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { Flame, Sparkles, Trophy } from "lucide-react";
