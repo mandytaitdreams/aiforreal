@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Shield, ExternalLink, Eye, Upload, Headphones } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { sanitizeHtml } from "@/lib/sanitize";
 
@@ -170,6 +171,10 @@ export default function Admin() {
           <h1 className="font-display font-black text-4xl">Admin · Content</h1>
         </div>
         <p className="text-muted-foreground">Add, edit and delete content for any track.</p>
+
+        <EventsAdmin />
+
+        <h2 className="mt-12 font-display font-black text-2xl">Track content</h2>
 
         <div className="mt-8 flex flex-wrap gap-4 items-end">
           <div className="flex-1 min-w-[240px]">
