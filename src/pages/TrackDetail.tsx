@@ -65,6 +65,22 @@ export default function TrackDetail() {
 
   useEffect(() => { if (!loading && !user) nav("/auth", { replace: true }); }, [loading, user, nav]);
 
+  // Sync tab from URL ?tab= and scroll to anchored item from #item-<id>
+  useEffect(() => {
+    const t = searchParams.get("tab");
+    if (t) setTab(t);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash) return;
+    const tries = [0, 200, 500, 900];
+    tries.forEach(d => setTimeout(() => {
+      const el = document.querySelector(hash);
+      if (el) (el as HTMLElement).scrollIntoView({ behavior: "smooth", block: "center" });
+    }, d));
+  }, [tab, playlists, prompts, videos, tools, templates, challenges]);
+
   useEffect(() => {
     if (!slug) return;
     (async () => {
