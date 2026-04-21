@@ -220,12 +220,13 @@ export default function Admin() {
         </Tabs>
 
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className={`${type === "tools" ? "max-w-5xl" : "max-w-xl"} max-h-[90vh] overflow-y-auto`}>
             <DialogHeader>
               <DialogTitle className="font-display capitalize">{editing?.id ? "Edit" : "New"} {type.slice(0, -1)}</DialogTitle>
             </DialogHeader>
             {editing && (
-              <div className="space-y-4">
+              <div className={type === "tools" ? "grid md:grid-cols-2 gap-6" : "space-y-4"}>
+                <div className="space-y-4">
                 {fields.map(f => (
                   <div key={f.name} className="space-y-1.5">
                     <Label htmlFor={f.name}>{f.label}</Label>
@@ -241,6 +242,26 @@ export default function Admin() {
                     )}
                   </div>
                 ))}
+                {type === "playlists" && (
+                  <ChaptersEditor
+                    value={Array.isArray(editing.chapters) ? editing.chapters : []}
+                    onChange={(chapters) => setEditing({ ...editing, chapters })}
+                  />
+                )}
+                </div>
+                {type === "tools" && (
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5"/> Live preview (sanitized)</Label>
+                    <div className="rounded-2xl border border-border bg-blush/40 p-5 max-h-[60vh] overflow-y-auto prose prose-sm max-w-none prose-headings:font-display prose-a:text-pink prose-strong:text-foreground">
+                      {editing.html_content ? (
+                        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(String(editing.html_content)) }} />
+                      ) : (
+                        <p className="text-muted-foreground italic m-0">Add HTML on the left to see how it will render in the platform.</p>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Scripts, iframes, inline styles and event handlers are stripped automatically for safety.</p>
+                  </div>
+                )}
               </div>
             )}
             <DialogFooter>
