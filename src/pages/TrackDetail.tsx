@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { AgentChat } from "@/components/track/AgentChat";
 import { Bookmark, BookmarkCheck, Copy, ExternalLink, PlayCircle, Sparkles, Wrench, FileText, Youtube, MessageCircle, Target } from "lucide-react";
 import { toast } from "sonner";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 type Track = { id: string; slug: string; number: string; title: string; tagline: string; description: string; agent_name: string; agent_role: string; hue: string; tier: string };
 type Agent = { id: string; name: string; role: string; tagline: string; system_prompt: string; model: string };
