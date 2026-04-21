@@ -246,7 +246,7 @@ export default function TrackDetail() {
               {tools.length === 0 ? <Empty label="Toolkit coming soon" /> : (
                 <div className="space-y-6">
                   {tools.map(t => (
-                    <div key={t.id} className="p-6 rounded-3xl bg-card border border-border shadow-soft">
+                    <div key={t.id} id={`item-${t.id}`} className="p-6 rounded-3xl bg-card border border-border shadow-soft scroll-mt-24">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
                           <h3 className="font-display font-bold text-lg">{t.name}</h3>
@@ -265,7 +265,7 @@ export default function TrackDetail() {
                       {t.html_content && (
                         <div
                           className="mt-5 p-5 rounded-2xl bg-blush/50 border border-border prose prose-sm max-w-none prose-headings:font-display prose-headings:text-foreground prose-a:text-pink prose-strong:text-foreground"
-                          dangerouslySetInnerHTML={{ __html: t.html_content }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(t.html_content) }}
                         />
                       )}
                     </div>
