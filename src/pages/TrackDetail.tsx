@@ -17,7 +17,7 @@ import { logAction } from "@/lib/actions";
 type Track = { id: string; slug: string; number: string; title: string; tagline: string; description: string; agent_name: string; agent_role: string; hue: string; tier: string };
 type Agent = { id: string; name: string; role: string; tagline: string; system_prompt: string; model: string };
 type Prompt = { id: string; title: string; body: string; use_case: string; difficulty: string };
-type Video = { id: string; title: string; description: string | null; duration_minutes: number; youtube_id: string | null; questions_answered: string[]; audio_url: string | null; audio_path: string | null; transcript: string | null };
+type Video = { id: string; title: string; description: string | null; duration_minutes: number; youtube_id: string | null; questions_answered: string[]; audio_url: string | null; audio_path: string | null; transcript: string | null; presentation_url: string | null };
 type Tool = { id: string; name: string; description: string; use_case: string | null; url: string | null; html_content: string | null };
 type Template = { id: string; title: string; body: string; use_case: string; problem_solved: string | null };
 type Chapter = { label: string; t: number };
