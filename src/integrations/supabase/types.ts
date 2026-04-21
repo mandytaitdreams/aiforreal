@@ -590,6 +590,7 @@ export type Database = {
           tags: string[]
           title: string
           track_id: string
+          transcript: string | null
           updated_at: string
           youtube_id: string | null
         }
@@ -607,6 +608,7 @@ export type Database = {
           tags?: string[]
           title: string
           track_id: string
+          transcript?: string | null
           updated_at?: string
           youtube_id?: string | null
         }
@@ -624,6 +626,7 @@ export type Database = {
           tags?: string[]
           title?: string
           track_id?: string
+          transcript?: string | null
           updated_at?: string
           youtube_id?: string | null
         }
