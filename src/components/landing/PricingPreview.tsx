@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Check, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 export const PricingPreview = () => {
   const nav = useNavigate();
+  const { user } = useAuth();
+  const go = () => nav(user ? "/dashboard" : "/onboarding");
   return (
     <section id="pricing" className="py-24 md:py-32 bg-[#fff0f5]">
       <div className="container">
@@ -43,7 +46,7 @@ export const PricingPreview = () => {
             </ul>
             <Button
               size="lg"
-              onClick={() => nav("/onboarding")}
+              onClick={go}
               className="mt-7 rounded-full bg-white text-[#ff0054] border-2 border-white hover:bg-[#ffd60a] hover:border-[#ffd60a] hover:text-[#141414] font-bold h-13"
             >
               Get my AI team — $29/month <ArrowRight className="ml-2 w-4 h-4" />
@@ -76,7 +79,7 @@ export const PricingPreview = () => {
             </ul>
             <Button
               variant="outline"
-              onClick={() => nav("/onboarding")}
+              onClick={go}
               className="mt-7 rounded-full border-2 border-[#ff0054] text-[#ff0054] hover:bg-[#ff0054] hover:text-white font-bold"
             >
               Start smaller — $9/month
