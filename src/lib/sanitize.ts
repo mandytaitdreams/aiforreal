@@ -1,8 +1,8 @@
-import DOMPurify from "dompurify";
+import DOMPurify, { Config } from "dompurify";
 
 // Strict allowlist: no scripts, no event handlers, no inline styles via on*, no iframes/objects.
 // Permits common rich-text + structural HTML for toolkits.
-const CONFIG: DOMPurify.Config = {
+const CONFIG: Config = {
   ALLOWED_TAGS: [
     "a","p","br","hr","span","div","section","article","header","footer",
     "h1","h2","h3","h4","h5","h6",
