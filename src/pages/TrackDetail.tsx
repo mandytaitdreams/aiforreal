@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { AudioPlayer, ListenToggle } from "@/components/track/AudioPlayer";
 import { PromptGenerator } from "@/components/track/PromptGenerator";
+import { logAction } from "@/lib/actions";
 
 type Track = { id: string; slug: string; number: string; title: string; tagline: string; description: string; agent_name: string; agent_role: string; hue: string; tier: string };
 type Agent = { id: string; name: string; role: string; tagline: string; system_prompt: string; model: string };
@@ -161,6 +162,13 @@ export default function TrackDetail() {
   };
 
   const copyText = (t: string) => { navigator.clipboard.writeText(t); toast.success("Copied"); };
+  const logPromptApplied = (id: string) => logAction("prompt_applied", { trackId: track?.id ?? null, refId: id });
+  const logPromptCopied = (id: string) => logAction("prompt_copied", { trackId: track?.id ?? null, refId: id });
+  const logToolkitDone = (id: string) => logAction("toolkit_done", { trackId: track?.id ?? null, refId: id });
+  const logTemplateUsed = (id: string) => logAction("template_used", { trackId: track?.id ?? null, refId: id });
+  const logVideoWatched = (id: string) => logAction("video_watched", { trackId: track?.id ?? null, refId: id });
+  const logChallengeDone = (id: string) => logAction("challenge_done", { trackId: track?.id ?? null, refId: id });
+  const logPlaylistOpened = (id: string) => logAction("playlist_opened", { trackId: track?.id ?? null, refId: id });
 
   if (!track) return <div className="min-h-screen bg-background"><SiteHeader /></div>;
 
@@ -234,8 +242,8 @@ export default function TrackDetail() {
                       </div>
                       <pre className="mt-4 p-4 bg-blush rounded-2xl text-xs text-foreground/80 whitespace-pre-wrap font-mono flex-1 overflow-auto max-h-48">{p.body}</pre>
                       <div className="flex gap-2 mt-4">
-                        <Button size="sm" variant="outline" onClick={() => copyText(p.body)} className="rounded-full flex-1"><Copy className="w-3.5 h-3.5 mr-1.5"/>Copy</Button>
-                        <Button size="sm" onClick={() => tryInChat(p.body)} className="rounded-full bg-pink text-white hover:bg-pink/90 flex-1"><Sparkles className="w-3.5 h-3.5 mr-1.5"/>Try in chat</Button>
+                        <Button size="sm" variant="outline" onClick={() => { copyText(p.body); logPromptCopied(p.id); }} className="rounded-full flex-1"><Copy className="w-3.5 h-3.5 mr-1.5"/>Copy</Button>
+                        <Button size="sm" onClick={() => { tryInChat(p.body); logPromptApplied(p.id); }} className="rounded-full bg-pink text-white hover:bg-pink/90 flex-1"><Sparkles className="w-3.5 h-3.5 mr-1.5"/>Try in chat</Button>
                       </div>
                     </div>
                   ))}
@@ -270,7 +278,7 @@ export default function TrackDetail() {
                         />
                       )}
                       <div className="flex gap-2 mt-4">
-                        <Button size="sm" onClick={() => tryInChat(`Walk me through how to use the toolkit "${t.name}" for my situation. ${t.description}`)} className="rounded-full bg-pink text-white hover:bg-pink/90">
+                        <Button size="sm" onClick={() => { tryInChat(`Walk me through how to use the toolkit "${t.name}" for my situation. ${t.description}`); logToolkitDone(t.id); }} className="rounded-full bg-pink text-white hover:bg-pink/90">
                           <Sparkles className="w-3.5 h-3.5 mr-1.5"/> Try in chat
                         </Button>
                       </div>
@@ -292,8 +300,8 @@ export default function TrackDetail() {
                       {t.problem_solved && <p className="text-xs text-muted-foreground mt-1 italic">Solves: {t.problem_solved}</p>}
                       <pre className="mt-4 p-4 bg-blush rounded-2xl text-xs text-foreground/80 whitespace-pre-wrap font-mono flex-1 overflow-auto max-h-56">{t.body}</pre>
                       <div className="flex gap-2 mt-4">
-                        <Button size="sm" variant="outline" onClick={() => copyText(t.body)} className="rounded-full flex-1"><Copy className="w-3.5 h-3.5 mr-1.5"/>Copy</Button>
-                        <Button size="sm" onClick={() => tryInChat(t.body)} className="rounded-full bg-pink text-white hover:bg-pink/90 flex-1">Use it now</Button>
+                        <Button size="sm" variant="outline" onClick={() => { copyText(t.body); logTemplateUsed(t.id); }} className="rounded-full flex-1"><Copy className="w-3.5 h-3.5 mr-1.5"/>Copy</Button>
+                        <Button size="sm" onClick={() => { tryInChat(t.body); logTemplateUsed(t.id); }} className="rounded-full bg-pink text-white hover:bg-pink/90 flex-1">Use it now</Button>
                       </div>
                     </div>
                   ))}
@@ -364,7 +372,7 @@ export default function TrackDetail() {
                       <h3 className="mt-3 font-display font-black text-xl">{c.title}</h3>
                       <p className="mt-2 text-sm text-white/90">{c.description}</p>
                       {c.success_metric && <p className="mt-3 text-xs italic text-white/80">✓ {c.success_metric}</p>}
-                      <Button size="sm" onClick={() => { setTab("agent"); setSeedPrompt(c.description); }} className="mt-4 rounded-full bg-white text-pink hover:bg-white/90 font-bold">Start now</Button>
+                      <Button size="sm" onClick={() => { setTab("agent"); setSeedPrompt(c.description); logChallengeDone(c.id); }} className="mt-4 rounded-full bg-white text-pink hover:bg-white/90 font-bold">Start now</Button>
                     </div>
                   ))}
                 </div>
