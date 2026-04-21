@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { Flame, Sparkles, Trophy, Bookmark, MessageCircle, ArrowRight } from "lucide-react";
+import { GlobalSearch } from "@/components/GlobalSearch";
 
 type DBTrack = { id: string; slug: string; number: string; title: string; tagline: string; agent_name: string; hue: string; tier: string };
 const hueBg = (h: string) => h === "pink" ? "bg-pink" : h === "yellow" ? "bg-yellow" : h === "lavender" ? "bg-lavender" : "bg-blush";
@@ -69,6 +70,9 @@ export default function Dashboard() {
                 <Stat icon={<Sparkles className="w-4 h-4 text-accent" />} label="XP" value={profile.xp.toString()} />
                 <Stat icon={<Trophy className="w-4 h-4 text-secondary" />} label="Tier" value={tierLabel(tier as any)} />
               </div>
+            </div>
+            <div className="mt-8 max-w-2xl">
+              <GlobalSearch />
             </div>
           </div>
         </section>

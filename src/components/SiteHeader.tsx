@@ -4,10 +4,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "./Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const SiteHeader = () => {
   const { user, signOut } = useAuth();
   const nav = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (!user) { setIsAdmin(false); return; }
+    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => setIsAdmin(!!data));
+  }, [user]);
   return (
     <header className="sticky top-3 z-40 mx-3">
       <div className="container glass-effect rounded-full px-5 py-2.5 flex items-center justify-between shadow-soft">
@@ -17,6 +24,7 @@ export const SiteHeader = () => {
           <Link to="/pricing" className="hover:text-[#ff0054] transition-colors">Pricing</Link>
           {user && <Link to="/dashboard" className="hover:text-[#ff0054] transition-colors">Dashboard</Link>}
           {user && <Link to="/library" className="hover:text-[#ff0054] transition-colors">Library</Link>}
+          {isAdmin && <Link to="/admin" className="hover:text-[#ff0054] transition-colors">Admin</Link>}
         </nav>
         <div className="flex items-center gap-2">
           {user ? (
