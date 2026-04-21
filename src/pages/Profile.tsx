@@ -7,13 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Flame, Sparkles, Trophy, BookOpen, MessageCircle, Calendar as Cal, Star } from "lucide-react";
+import { Copy } from "lucide-react";
 import { toast } from "sonner";
+import { BADGES, levelForXp } from "@/lib/actions";
 
 export default function Profile() {
   const { user, profile, loading, refreshProfile } = useAuth();
   const nav = useNavigate();
   const [name, setName] = useState("");
   const [stats, setStats] = useState({ tracksStarted: 0, savedItems: 0, conversations: 0, posts: 0, rsvps: 0 });
+  const [badges, setBadges] = useState<{ badge_code: string; awarded_at: string }[]>([]);
+  const [referralCode, setReferralCode] = useState<string>("");
 
   useEffect(() => { if (!loading && !user) nav("/auth", { replace: true }); }, [loading, user, nav]);
   useEffect(() => { if (profile?.display_name) setName(profile.display_name); }, [profile]);
@@ -21,17 +25,21 @@ export default function Profile() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [a, b, c, d, e] = await Promise.all([
+      const [a, b, c, d, e, bg, prof] = await Promise.all([
         supabase.from("user_track_progress").select("id", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("saved_items").select("id", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("agent_conversations").select("id", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("forum_posts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("event_rsvps").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("user_badges").select("badge_code, awarded_at").eq("user_id", user.id),
+        supabase.from("profiles").select("referral_code").eq("user_id", user.id).maybeSingle(),
       ]);
       setStats({
         tracksStarted: a.count ?? 0, savedItems: b.count ?? 0,
         conversations: c.count ?? 0, posts: d.count ?? 0, rsvps: e.count ?? 0,
       });
+      setBadges((bg.data ?? []) as any);
+      setReferralCode((prof.data as any)?.referral_code ?? "");
     })();
   }, [user]);
 
