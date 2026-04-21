@@ -222,7 +222,7 @@ export default function TrackDetail() {
               {prompts.length === 0 ? <Empty label="Prompts coming soon" /> : (
                 <div className="grid md:grid-cols-2 gap-5">
                   {prompts.map(p => (
-                    <div key={p.id} className="p-6 rounded-3xl bg-card border border-border shadow-soft flex flex-col">
+                    <div key={p.id} id={`item-${p.id}`} className="p-6 rounded-3xl bg-card border border-border shadow-soft flex flex-col scroll-mt-24">
                       <div className="flex items-start justify-between gap-3">
                         <h3 className="font-display font-bold text-lg">{p.title}</h3>
                         <SaveBtn saved={savedIds.has(p.id)} onClick={() => toggleSave(p.id, "prompt")} />
@@ -278,7 +278,7 @@ export default function TrackDetail() {
               {templates.length === 0 ? <Empty label="Templates coming soon" /> : (
                 <div className="grid md:grid-cols-2 gap-5">
                   {templates.map(t => (
-                    <div key={t.id} className="p-6 rounded-3xl bg-card border border-border shadow-soft flex flex-col">
+                    <div key={t.id} id={`item-${t.id}`} className="p-6 rounded-3xl bg-card border border-border shadow-soft flex flex-col scroll-mt-24">
                       <div className="flex items-start justify-between gap-3">
                         <h3 className="font-display font-bold text-lg">{t.title}</h3>
                         <SaveBtn saved={savedIds.has(t.id)} onClick={() => toggleSave(t.id, "template")} />
@@ -353,7 +353,7 @@ export default function TrackDetail() {
               {challenges.length === 0 ? <Empty label="Challenges coming soon" /> : (
                 <div className="grid md:grid-cols-3 gap-5">
                   {challenges.map(c => (
-                    <div key={c.id} className="p-6 rounded-3xl bg-gradient-brand text-white shadow-pink">
+                    <div key={c.id} id={`item-${c.id}`} className="p-6 rounded-3xl bg-gradient-brand text-white shadow-pink scroll-mt-24">
                       <Badge className="rounded-full bg-white/20 text-white border-0">{c.kind === "five_day" ? "5-day" : "Quick"}</Badge>
                       <h3 className="mt-3 font-display font-black text-xl">{c.title}</h3>
                       <p className="mt-2 text-sm text-white/90">{c.description}</p>
