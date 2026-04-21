@@ -14,6 +14,7 @@ import { Plus, Pencil, Trash2, Shield, ExternalLink, Eye, Upload, Headphones } f
 import { Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { AnalyticsPanel } from "@/components/admin/AnalyticsPanel";
 
 type Track = { id: string; slug: string; number: string; title: string };
 
@@ -171,6 +172,11 @@ export default function Admin() {
           <h1 className="font-display font-black text-4xl">Admin · Content</h1>
         </div>
         <p className="text-muted-foreground">Add, edit and delete content for any track.</p>
+
+        <section className="mt-10">
+          <h2 className="font-display font-black text-2xl mb-4">Analytics</h2>
+          <AnalyticsPanel />
+        </section>
 
         <EventsAdmin />
 
