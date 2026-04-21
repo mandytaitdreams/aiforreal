@@ -301,10 +301,17 @@ export default function TrackDetail() {
                   {playlists.map(p => {
                     const embed = youtubeEmbedUrl(p.youtube_url);
                     return (
-                      <div key={p.id} className="p-5 rounded-3xl bg-card border border-border shadow-soft">
+                      <div key={p.id} id={`item-${p.id}`} className="p-5 rounded-3xl bg-card border border-border shadow-soft scroll-mt-24">
                         <div className="aspect-video rounded-2xl overflow-hidden bg-blush flex items-center justify-center mb-4">
                           {embed ? (
-                            <iframe className="w-full h-full" src={embed} title={p.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+                            <iframe
+                              ref={(el) => { playerRefs.current[p.id] = el; }}
+                              className="w-full h-full"
+                              src={embed}
+                              title={p.title}
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
                           ) : (
                             <Youtube className="w-10 h-10 text-pink/40" />
                           )}
@@ -318,6 +325,23 @@ export default function TrackDetail() {
                             YouTube <ExternalLink className="w-3 h-3"/>
                           </a>
                         </div>
+                        {p.chapters && p.chapters.length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-border">
+                            <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Chapters</div>
+                            <div className="flex flex-wrap gap-1.5">
+                              {p.chapters.map((c, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => seekIframeTo(playerRefs.current[p.id], c.t)}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blush hover:bg-pink hover:text-white text-xs font-medium transition-colors"
+                                >
+                                  <span className="font-mono opacity-70">{fmtTime(c.t)}</span>
+                                  <span>{c.label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
