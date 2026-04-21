@@ -22,6 +22,26 @@ type Challenge = { id: string; title: string; description: string; success_metri
 const hueClass = (h: string) => h === "pink" ? "bg-pink" : h === "yellow" ? "bg-yellow" : h === "lavender" ? "bg-lavender" : "bg-blush";
 const tierLabel = (t: string) => t === "try" ? "Try It" : t === "growth" ? "Growth" : t === "power" ? "Power" : "Free";
 
+const youtubeEmbedUrl = (url: string): string | null => {
+  try {
+    const u = new URL(url);
+    // playlist
+    const list = u.searchParams.get("list");
+    if (list) return `https://www.youtube.com/embed/videoseries?list=${list}`;
+    // watch?v=
+    const v = u.searchParams.get("v");
+    if (v) return `https://www.youtube.com/embed/${v}`;
+    // youtu.be/<id>
+    if (u.hostname.includes("youtu.be")) {
+      const id = u.pathname.replace(/^\//, "").split("/")[0];
+      if (id) return `https://www.youtube.com/embed/${id}`;
+    }
+    // /embed/<id> already
+    if (u.pathname.startsWith("/embed/")) return url;
+    return null;
+  } catch { return null; }
+};
+
 export default function TrackDetail() {
   const { slug } = useParams();
   const { user, loading } = useAuth();
