@@ -53,6 +53,10 @@ export default function Profile() {
 
   if (!profile) return <div className="min-h-screen bg-background"><SiteHeader/></div>;
 
+  const lvl = levelForXp(profile.xp);
+  const earned = new Set(badges.map(b => b.badge_code));
+  const inviteUrl = referralCode ? `${window.location.origin}/auth?mode=signup&ref=${referralCode}` : "";
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
