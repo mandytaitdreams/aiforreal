@@ -129,8 +129,35 @@ export default function Dashboard() {
                 <p className="mt-2 text-sm italic line-clamp-2">"{profile.first_win}"</p>
               </div>
             )}
+            {nextEvent && (
+              <Link to="/events" className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border shadow-soft hover:shadow-pink transition-all">
+                <div className="w-10 h-10 rounded-full bg-blush flex items-center justify-center"><Calendar className="w-4 h-4 text-pink"/></div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold truncate">Next event: {nextEvent.title}</div>
+                  <div className="text-xs text-muted-foreground">{new Date(nextEvent.starts_at).toLocaleString()}</div>
+                </div>
+                <ArrowRight className="w-4 h-4 text-muted-foreground"/>
+              </Link>
+            )}
           </div>
         </section>
+
+        {featuredWins.length > 0 && (
+          <section className="container py-4">
+            <div className="flex items-end justify-between mb-4">
+              <h2 className="font-display font-black text-2xl flex items-center gap-2"><Star className="w-5 h-5 text-pink"/> Featured wins</h2>
+              <Link to="/community?section=wins" className="text-sm text-primary hover:underline">All wins →</Link>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-4">
+              {featuredWins.map(w => (
+                <Link key={w.id} to={`/community?section=wins`} className="p-5 rounded-2xl bg-gradient-cream border border-pink/20 shadow-soft hover:shadow-pink transition-all">
+                  <div className="font-display font-bold">{w.title}</div>
+                  <p className="mt-1 text-sm text-foreground/80 line-clamp-3">{w.body}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Tracks */}
         <section className="container py-10 pb-24">
