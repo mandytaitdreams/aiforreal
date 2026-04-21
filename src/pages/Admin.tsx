@@ -15,6 +15,7 @@ import { Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { sanitizeHtml } from "@/lib/sanitize";
 import { AnalyticsPanel } from "@/components/admin/AnalyticsPanel";
+import { BulkUpload } from "@/components/admin/BulkUpload";
 
 type Track = { id: string; slug: string; number: string; title: string };
 
