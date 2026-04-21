@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageSquare, Plus, Sparkles, Star, ThumbsUp, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { logAction } from "@/lib/actions";
 
 type Section = "questions" | "wins" | "resources" | "feedback";
 const SECTIONS: { id: Section; label: string }[] = [
@@ -92,11 +93,14 @@ export default function Community() {
   const submit = async () => {
     if (!user) return;
     if (!draft.title.trim() || !draft.body.trim()) return toast.error("Title and body required");
-    const { error } = await supabase.from("forum_posts").insert({
+    const { data: inserted, error } = await supabase.from("forum_posts").insert({
       user_id: user.id, section, title: draft.title.trim(), body: draft.body.trim(),
       track_id: draft.track_id || null,
-    });
+    }).select("id").single();
     if (error) return toast.error(error.message);
+    if (section === "wins" && inserted) {
+      void logAction("win_posted", { trackId: draft.track_id || null, refId: inserted.id });
+    }
     toast.success("Posted");
     setDraft({ title: "", body: "", track_id: "" });
     setOpen(false);
@@ -112,8 +116,9 @@ export default function Community() {
 
   const reply = async (postId: string, body: string) => {
     if (!user || !body.trim()) return;
-    const { error } = await supabase.from("forum_replies").insert({ post_id: postId, user_id: user.id, body: body.trim() });
+    const { data: inserted, error } = await supabase.from("forum_replies").insert({ post_id: postId, user_id: user.id, body: body.trim() }).select("id").single();
     if (error) return toast.error(error.message);
+    if (inserted) void logAction("reply_posted", { refId: inserted.id });
     loadReplies(postId);
   };
 

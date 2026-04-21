@@ -217,7 +217,7 @@ export default function TrackDetail() {
                       onSave={() => toggleSave(v.id, "video")}
                       mode={audioMode[v.id] ?? "watch"}
                       onModeChange={(m) => setAudioMode(prev => ({ ...prev, [v.id]: m }))}
-                      onTryInChat={() => tryInChat(`Help me apply this video to my situation: "${v.title}". ${v.description ?? ""}`.trim())}
+                      onTryInChat={() => { tryInChat(`Help me apply this video to my situation: "${v.title}". ${v.description ?? ""}`.trim()); logVideoWatched(v.id); }}
                     />
                   ))}
                 </div>
@@ -346,7 +346,7 @@ export default function TrackDetail() {
                               {p.chapters.map((c, i) => (
                                 <button
                                   key={i}
-                                  onClick={() => seekIframeTo(playerRefs.current[p.id], c.t)}
+                                  onClick={() => { seekIframeTo(playerRefs.current[p.id], c.t); logPlaylistOpened(p.id); }}
                                   className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blush hover:bg-pink hover:text-white text-xs font-medium transition-colors"
                                 >
                                   <span className="font-mono opacity-70">{fmtTime(c.t)}</span>
