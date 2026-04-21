@@ -37,7 +37,7 @@ export const Hero = () => {
           <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center animate-fade-up [animation-delay:240ms]">
             <Button
               size="lg"
-              onClick={() => nav("/auth?mode=signup")}
+              onClick={() => nav("/onboarding")}
               className="bg-[#ff0054] text-white border-2 border-transparent shadow-pink hover:bg-white hover:text-[#ff0054] hover:border-[#ff0054] hover:-translate-y-0.5 transition-all text-base h-14 px-8 rounded-full font-bold"
             >
               Get your first AI win in under 15 minutes <ArrowRight className="ml-2 w-5 h-5" />

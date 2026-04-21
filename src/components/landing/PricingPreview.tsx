@@ -43,7 +43,7 @@ export const PricingPreview = () => {
             </ul>
             <Button
               size="lg"
-              onClick={() => nav("/auth?mode=signup")}
+              onClick={() => nav("/onboarding")}
               className="mt-7 rounded-full bg-white text-[#ff0054] border-2 border-white hover:bg-[#ffd60a] hover:border-[#ffd60a] hover:text-[#141414] font-bold h-13"
             >
               Get my AI team — $29/month <ArrowRight className="ml-2 w-4 h-4" />
@@ -76,7 +76,7 @@ export const PricingPreview = () => {
             </ul>
             <Button
               variant="outline"
-              onClick={() => nav("/auth?mode=signup")}
+              onClick={() => nav("/onboarding")}
               className="mt-7 rounded-full border-2 border-[#ff0054] text-[#ff0054] hover:bg-[#ff0054] hover:text-white font-bold"
             >
               Start smaller — $9/month

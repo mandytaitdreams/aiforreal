@@ -22,7 +22,7 @@ export const FinalCTA = () => {
         <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             size="lg"
-            onClick={() => nav("/auth?mode=signup")}
+            onClick={() => nav("/onboarding")}
             className="bg-[#ff0054] text-white border-2 border-transparent hover:bg-white hover:text-[#ff0054] hover:border-[#ff0054] shadow-pink-lg text-base h-14 px-9 rounded-full font-bold"
           >
             Get my first AI win — $29/month <ArrowRight className="ml-2 w-5 h-5" />
@@ -30,7 +30,7 @@ export const FinalCTA = () => {
           <Button
             size="lg"
             variant="outline"
-            onClick={() => nav("/auth?mode=signup")}
+            onClick={() => nav("/onboarding")}
             className="bg-transparent text-white border-2 border-white/30 hover:bg-white hover:text-[#2a1b3d] h-14 px-7 rounded-full font-bold"
           >
             Start smaller — $9/month
