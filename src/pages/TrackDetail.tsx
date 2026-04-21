@@ -85,7 +85,7 @@ export default function TrackDetail() {
       setVideos((vd ?? []) as Video[]);
       setTools((tl ?? []) as Tool[]);
       setTemplates((tp ?? []) as Template[]);
-      setPlaylists((pl ?? []) as Playlist[]);
+      setPlaylists(((pl ?? []) as any[]).map(p => ({ ...p, chapters: Array.isArray(p.chapters) ? p.chapters : [] })) as Playlist[]);
       setChallenges((ch ?? []) as Challenge[]);
 
       if (user) {
