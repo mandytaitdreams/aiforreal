@@ -42,11 +42,11 @@ const TYPE_FIELDS: Record<ContentType, { name: string; label: string; type?: "te
     { name: "sort_order", label: "Sort order", type: "number" },
   ],
   tools: [
-    { name: "name", label: "Tool name" },
-    { name: "description", label: "Description", type: "textarea" },
-    { name: "use_case", label: "Use case" },
-    { name: "url", label: "URL", type: "url" },
-    { name: "html_content", label: "HTML content (renders inside the platform)", type: "textarea" },
+    { name: "name", label: "Tool name (e.g. 'Niche Quiz', 'Prompt Generator')" },
+    { name: "description", label: "What problem does it solve in 1 minute?", type: "textarea" },
+    { name: "use_case", label: "Use case (quiz, generator, calculator, checklist…)" },
+    { name: "url", label: "External URL (only if hosted elsewhere)", type: "url" },
+    { name: "html_content", label: "Interactive HTML (quiz, generator, form — runs inside the platform)", type: "textarea" },
     { name: "sort_order", label: "Sort order", type: "number" },
   ],
   templates: [
