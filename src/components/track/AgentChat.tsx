@@ -11,17 +11,27 @@ type Msg = { role: "user" | "assistant"; content: string };
 
 type Agent = { id: string; name: string; role: string; tagline: string; system_prompt: string; model: string };
 
-export const AgentChat = ({ agent, trackId, seedPrompt }: { agent: Agent; trackId: string; seedPrompt?: string }) => {
+export const AgentChat = ({ agent, trackId, seedPrompt, autoSend = false }: { agent: Agent; trackId: string | null; seedPrompt?: string; autoSend?: boolean }) => {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState(seedPrompt ?? "");
   const [streaming, setStreaming] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastAutoSentRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (seedPrompt) setInput(seedPrompt);
   }, [seedPrompt]);
+
+  // auto-send seed once per unique value
+  useEffect(() => {
+    if (!autoSend || !seedPrompt || !user) return;
+    if (lastAutoSentRef.current === seedPrompt) return;
+    lastAutoSentRef.current = seedPrompt;
+    setTimeout(() => { void send(); }, 50);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoSend, seedPrompt, user]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
