@@ -195,6 +195,7 @@ export default function TrackDetail() {
               <TabsTrigger value="templates" className="rounded-full data-[state=active]:bg-pink data-[state=active]:text-white"><FileText className="w-4 h-4 mr-1.5"/>Templates</TabsTrigger>
               <TabsTrigger value="playlists" className="rounded-full data-[state=active]:bg-pink data-[state=active]:text-white"><Youtube className="w-4 h-4 mr-1.5"/>Playlists</TabsTrigger>
               <TabsTrigger value="challenges" className="rounded-full data-[state=active]:bg-pink data-[state=active]:text-white"><Target className="w-4 h-4 mr-1.5"/>Do This Now</TabsTrigger>
+              <TabsTrigger value="transcripts" className="rounded-full data-[state=active]:bg-pink data-[state=active]:text-white"><ScrollText className="w-4 h-4 mr-1.5"/>Transcripts</TabsTrigger>
               <TabsTrigger value="agent" id="agent-tab" className="rounded-full data-[state=active]:bg-pink data-[state=active]:text-white"><MessageCircle className="w-4 h-4 mr-1.5"/>Ask {agent?.name ?? "Agent"}</TabsTrigger>
             </TabsList>
 
