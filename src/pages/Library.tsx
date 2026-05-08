@@ -31,7 +31,7 @@ export default function Library() {
   const [memories, setMemories] = useState<Memory[]>([]);
   const [busy, setBusy] = useState(true);
 
-  useEffect(() => { if (!loading && !user) nav("/auth", { replace: true }); }, [loading, user, nav]);
+  useEffect(() => { /* auth disabled */ }, [loading, user, nav]);
 
   useEffect(() => {
     if (!user) return;
