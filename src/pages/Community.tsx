@@ -44,7 +44,7 @@ export default function Community() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [openPostId, setOpenPostId] = useState<string | null>(params.get("post"));
 
-  useEffect(() => { if (!loading && !user) nav("/auth", { replace: true }); }, [loading, user, nav]);
+  useEffect(() => { /* auth disabled */ }, [loading, user, nav]);
 
   useEffect(() => {
     if (!user) return;

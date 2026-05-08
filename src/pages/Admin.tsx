@@ -91,7 +91,7 @@ export default function Admin() {
   const [editing, setEditing] = useState<any | null>(null);
   const [open, setOpen] = useState(false);
 
-  useEffect(() => { if (!loading && !user) nav("/auth", { replace: true }); }, [loading, user, nav]);
+  useEffect(() => { /* auth disabled */ }, [loading, user, nav]);
 
   useEffect(() => {
     if (!user) return;

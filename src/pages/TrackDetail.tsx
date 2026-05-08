@@ -88,7 +88,7 @@ export default function TrackDetail() {
   const [tab, setTab] = useState(() => searchParams.get("tab") || "videos");
   const playerRefs = useRef<Record<string, HTMLIFrameElement | null>>({});
 
-  useEffect(() => { if (!loading && !user) nav("/auth", { replace: true }); }, [loading, user, nav]);
+  useEffect(() => { /* auth disabled */ }, [loading, user, nav]);
 
   // Sync tab from URL ?tab= and scroll to anchored item from #item-<id>
   useEffect(() => {

@@ -23,7 +23,7 @@ export default function Events() {
   const [events, setEvents] = useState<EventRow[]>([]);
   const [rsvps, setRsvps] = useState<Set<string>>(new Set());
 
-  useEffect(() => { if (!loading && !user) nav("/auth", { replace: true }); }, [loading, user, nav]);
+  useEffect(() => { /* auth disabled */ }, [loading, user, nav]);
 
   const load = async () => {
     const { data } = await supabase.from("events").select("*").eq("published", true).order("starts_at");

@@ -19,7 +19,7 @@ export default function Profile() {
   const [badges, setBadges] = useState<{ badge_code: string; awarded_at: string }[]>([]);
   const [referralCode, setReferralCode] = useState<string>("");
 
-  useEffect(() => { if (!loading && !user) nav("/auth", { replace: true }); }, [loading, user, nav]);
+  useEffect(() => { /* auth disabled */ }, [loading, user, nav]);
   useEffect(() => { if (profile?.display_name) setName(profile.display_name); }, [profile]);
 
   useEffect(() => {

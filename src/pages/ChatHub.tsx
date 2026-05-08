@@ -18,7 +18,7 @@ export default function ChatHub() {
   const seedB64 = params.get("seed");
   const seed = seedB64 ? safeDecode(seedB64) : undefined;
 
-  useEffect(() => { if (!loading && !user) nav("/auth", { replace: true }); }, [loading, user, nav]);
+  useEffect(() => { /* auth disabled */ }, [loading, user, nav]);
 
   useEffect(() => {
     (async () => {
