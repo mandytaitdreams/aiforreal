@@ -26,28 +26,7 @@ export default function Auth() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
-          email, password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/onboarding`,
-            data: { display_name: name || email.split("@")[0] },
-          },
-        });
-        if (error) throw error;
-        toast.success("You're in. Let's get your first win.");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success("Welcome back.");
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
+    toast.error("Sign-in is currently disabled.");
   };
 
   return (
@@ -59,13 +38,13 @@ export default function Auth() {
             <div className="absolute -top-20 -right-20 w-48 h-48 bg-gradient-sunrise opacity-30 blur-3xl" />
             <div className="relative">
               <h1 className="font-display font-black text-3xl text-foreground">
-                {mode === "signup" ? "Get your first AI win." : "Welcome back."}
+                Sign-in is currently disabled.
               </h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                {mode === "signup" ? "30 seconds. No credit card." : "Pick up where you left off."}
+                We're not accepting new sign-ups or logins right now. Please check back soon.
               </p>
 
-              <form onSubmit={submit} className="mt-8 space-y-4">
+              <form onSubmit={submit} className="mt-8 space-y-4 hidden">
                 {mode === "signup" && (
                   <div className="space-y-1.5">
                     <Label htmlFor="name">First name</Label>
