@@ -25,7 +25,8 @@ export default function Dashboard() {
   const [featuredWins, setFeaturedWins] = useState<{ id: string; title: string; body: string }[]>([]);
 
   useEffect(() => {
-    if (!loading && profile && !profile.onboarding_complete) nav("/onboarding", { replace: true });
+    if (!loading && !user) nav("/auth", { replace: true });
+    else if (!loading && profile && !profile.onboarding_complete) nav("/onboarding", { replace: true });
   }, [loading, user, profile, nav]);
 
   useEffect(() => {
